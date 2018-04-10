@@ -1,2 +1,3 @@
 install/*
 etc/ssl/nginx/*
+.DS_Store
