@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:17.10
 
 LABEL maintainer="armand@nginx.com"
 
@@ -24,7 +24,7 @@ RUN apt-get update
 RUN apt-get -y install nginx-plus
 
 ## Optional: Install NGINX Plus Modules from repo
-#RUN apt-get install -y nginx-plus-module-modsecurity
+RUN apt-get install -y nginx-plus-module-modsecurity
 #RUN apt-get install -y nginx-plus-module-geoip
 #RUN apt‑get install -y nginx-plus-module-njs
 

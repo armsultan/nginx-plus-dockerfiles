@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM debian:stretch-slim
 
 LABEL maintainer="armand@nginx.com"
 

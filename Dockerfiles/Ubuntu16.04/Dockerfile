@@ -4,7 +4,8 @@ LABEL maintainer="armand@nginx.com"
 
 # Install prerequisite packages:
 RUN apt-get update
-RUN apt-get install -y apt-transport-https lsb-release ca-certificates wget
+RUN apt-get install -y apt-transport-https lsb-release ca-certificates wget dnsutils
+#RUN apt-get install -y vim # vi for config file editing
 
 ## Install Nginx Plus
 
@@ -16,11 +17,11 @@ COPY etc/ssl/nginx/nginx-repo.key /etc/ssl/nginx/nginx-repo.key
 
 # Install method A. Install NGINX Plus from repo
 # Get other files required for installation
-# RUN wget http://nginx.org/keys/nginx_signing.key && apt-key add nginx_signing.key
-# RUN printf "deb https://plus-pkgs.nginx.com/ubuntu `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/nginx-plus.list
-# RUN wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90nginx
-# RUN apt-get update
-# RUN apt-get -y install nginx-plus
+RUN wget http://nginx.org/keys/nginx_signing.key && apt-key add nginx_signing.key
+RUN printf "deb https://plus-pkgs.nginx.com/ubuntu `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/nginx-plus.list
+RUN wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90nginx
+RUN apt-get update
+RUN apt-get -y install nginx-plus
 
 ## Optional: Install NGINX Plus Modules from repo
 #RUN apt-get install -y nginx-plus-module-modsecurity
@@ -28,14 +29,14 @@ COPY etc/ssl/nginx/nginx-repo.key /etc/ssl/nginx/nginx-repo.key
 #RUN apt‑get install -y nginx-plus-module-njs
 
 # Install method B. "Offine" Install NGINX Plus from .rpm
-COPY install/nginx-plus_15-1~xenial_amd64.deb /tmp/nginx-plus_15-1~xenial_amd64.deb
-RUN dpkg -i /tmp/nginx-plus_15-1~xenial_amd64.deb
+# COPY install/nginx-plus_15-1~xenial_amd64.deb /tmp/nginx-plus_15-1~xenial_amd64.deb
+# RUN dpkg -i /tmp/nginx-plus_15-1~xenial_amd64.deb
 
 ## Optional: Install NGINX Plus Modules from .deb (ensure dependencies are installed first)
 # Example:
-RUN apt-get install -y libedit2
-COPY install/nginx-plus-module-njs_15+0.2.0-1~xenial_amd64.deb /tmp/nginx-plus-module-njs_15+0.2.0-1~xenial_amd64.deb
-RUN dpkg -i /tmp/nginx-plus-module-njs_15+0.2.0-1~xenial_amd64.deb
+# RUN apt-get install -y libedit2
+# COPY install/nginx-plus-module-njs_15+0.2.0-1~xenial_amd64.deb /tmp/nginx-plus-module-njs_15+0.2.0-1~xenial_amd64.deb
+# RUN dpkg -i /tmp/nginx-plus-module-njs_15+0.2.0-1~xenial_amd64.deb
 
 # Optional: COPY over any of your SSL certs for HTTPS servers
 # Example:

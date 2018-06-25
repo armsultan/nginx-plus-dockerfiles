@@ -3,7 +3,8 @@ FROM centos:centos7
 LABEL maintainer="armand@nginx.com"
 
 # Install prerequisite packages:
-RUN yum install -y wget ca-certificates bind-utils wget
+RUN yum install -y wget ca-certificates bind-utils wget bind-utils
+# RUN yum install -y vim # vi for config file editing
 
 ## Install Nginx Plus
 
@@ -15,8 +16,8 @@ COPY etc/ssl/nginx/nginx-repo.key /etc/ssl/nginx/nginx-repo.key
 
 # Install method A. Install NGINX Plus from repo
 # Get other files required for installation
-#RUN wget -q -O /etc/yum.repos.d/nginx-plus-7.repo https://cs.nginx.com/static/files/nginx-plus-7.repo
-#RUN yum install -y nginx-plus
+RUN wget -q -O /etc/yum.repos.d/nginx-plus-7.repo https://cs.nginx.com/static/files/nginx-plus-7.repo
+RUN yum install -y nginx-plus
 
 ## Optional: Install NGINX Plus Modules from repo
 #RUN yum install -y nginx-plus-module-modsecurity
@@ -24,13 +25,13 @@ COPY etc/ssl/nginx/nginx-repo.key /etc/ssl/nginx/nginx-repo.key
 # RUN yum install -y nginx-plus-module-njs
 
 # Install method B. "Offine" Install NGINX Plus from .rpm
-COPY install/nginx-plus-15-1.el7_4.ngx.x86_64.rpm /tmp/nginx-plus-15-1.el7_4.ngx.x86_64.rpm
-RUN yum localinstall -y /tmp/nginx-plus-15-1.el7_4.ngx.x86_64.rpm
+# COPY install/nginx-plus-15-1.el7_4.ngx.x86_64.rpm /tmp/nginx-plus-15-1.el7_4.ngx.x86_64.rpm
+# RUN yum localinstall -y /tmp/nginx-plus-15-1.el7_4.ngx.x86_64.rpm
 
 ## Optional: Install NGINX Plus Modules from .rpm
 # Example:
-COPY install/nginx-plus-module-njs-15+0.2.0-1.el7_4.ngx.x86_64.rpm /tmp/nginx-plus-module-njs-15+0.2.0-1.el7_4.ngx.x86_64.rpm
-RUN dpkg -i /tmp/nginx-plus-module-njs-15+0.2.0-1.el7_4.ngx.x86_64.rpm
+# COPY install/nginx-plus-module-njs-15+0.2.0-1.el7_4.ngx.x86_64.rpm /tmp/nginx-plus-module-njs-15+0.2.0-1.el7_4.ngx.x86_64.rpm
+# RUN dpkg -i /tmp/nginx-plus-module-njs-15+0.2.0-1.el7_4.ngx.x86_64.rpm
 
 # Optional: COPY over any of your SSL certs for HTTPS servers
 # Example:
