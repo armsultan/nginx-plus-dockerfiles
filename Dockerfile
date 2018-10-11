@@ -1,11 +1,10 @@
-FROM ubuntu:16.04
+FROM centos:centos7
 
 LABEL maintainer="armand@nginx.com"
 
 # Install prerequisite packages:
-RUN apt-get update
-RUN apt-get install -y apt-transport-https lsb-release ca-certificates wget dnsutils
-#RUN apt-get install -y vim # vi for config file editing
+RUN yum install -y wget ca-certificates bind-utils wget bind-utils
+# RUN yum install -y vim # vi for config file editing
 
 ## Install Nginx Plus
 
@@ -14,29 +13,26 @@ RUN apt-get install -y apt-transport-https lsb-release ca-certificates wget dnsu
 RUN mkdir -p /etc/ssl/nginx
 COPY etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.crt
 COPY etc/ssl/nginx/nginx-repo.key /etc/ssl/nginx/nginx-repo.key
+RUN chmod 644 /etc/ssl/nginx/*
 
 # Install method A. Install NGINX Plus from repo
 # Get other files required for installation
-RUN wget http://nginx.org/keys/nginx_signing.key && apt-key add nginx_signing.key
-RUN printf "deb https://plus-pkgs.nginx.com/ubuntu `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/nginx-plus.list
-RUN wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90nginx
-RUN apt-get update
-RUN apt-get -y install nginx-plus
+RUN wget -q -O /etc/yum.repos.d/nginx-plus-7.repo https://cs.nginx.com/static/files/nginx-plus-7.repo
+RUN yum install -y nginx-plus
 
 ## Optional: Install NGINX Plus Modules from repo
-#RUN apt-get install -y nginx-plus-module-modsecurity
-#RUN apt-get install -y nginx-plus-module-geoip
-#RUN apt‑get install -y nginx-plus-module-njs
+#RUN yum install -y nginx-plus-module-modsecurity
+#RUN yum install -y nginx-plus-module-geoip
+# RUN yum install -y nginx-plus-module-njs
 
 # Install method B. "Offine" Install NGINX Plus from .rpm
-# COPY install/nginx-plus_15-1~xenial_amd64.deb /tmp/nginx-plus_15-1~xenial_amd64.deb
-# RUN dpkg -i /tmp/nginx-plus_15-1~xenial_amd64.deb
+# COPY install/nginx-plus-15-1.el7_4.ngx.x86_64.rpm /tmp/nginx-plus-15-1.el7_4.ngx.x86_64.rpm
+# RUN yum localinstall -y /tmp/nginx-plus-15-1.el7_4.ngx.x86_64.rpm
 
-## Optional: Install NGINX Plus Modules from .deb (ensure dependencies are installed first)
+## Optional: Install NGINX Plus Modules from .rpm
 # Example:
-# RUN apt-get install -y libedit2
-# COPY install/nginx-plus-module-njs_15+0.2.0-1~xenial_amd64.deb /tmp/nginx-plus-module-njs_15+0.2.0-1~xenial_amd64.deb
-# RUN dpkg -i /tmp/nginx-plus-module-njs_15+0.2.0-1~xenial_amd64.deb
+# COPY install/nginx-plus-module-njs-15+0.2.0-1.el7_4.ngx.x86_64.rpm /tmp/nginx-plus-module-njs-15+0.2.0-1.el7_4.ngx.x86_64.rpm
+# RUN dpkg -i /tmp/nginx-plus-module-njs-15+0.2.0-1.el7_4.ngx.x86_64.rpm
 
 # Optional: COPY over any of your SSL certs for HTTPS servers
 # Example:
