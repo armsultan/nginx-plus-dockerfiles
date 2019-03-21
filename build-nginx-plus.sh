@@ -12,7 +12,8 @@ rm Dockerfile
 cp Dockerfiles/$distro/Dockerfile .
 
 # Build and tag it as "nginx-plus-[distro]"
-docker build -t nginx-plus-$distro .
+docker build -t nginx-plus-$distro . --pull --no-cache # No caching
+# docker build -t nginx-plus-$distro
 
 # Show all docker containers build with names containing "nginx-plus-"
 printf "\n"

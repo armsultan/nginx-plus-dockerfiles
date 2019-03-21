@@ -1,13 +1,13 @@
-FROM centos:centos7
+FROM ubuntu:16.04
 
 LABEL maintainer="armand@nginx.com"
 
 # Install prerequisite packages:
-RUN yum install -y wget ca-certificates bind-utils wget bind-utils
-# RUN yum install -y vim # vi for config file editing
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends apt-transport-https lsb-release ca-certificates wget dnsutils gnupg && rm -rf /var/lib/apt/lists/*
+#RUN DEBIAN_FRONTEND=noninteractive apt-get -qq -y && rm -rf /var/lib/apt/lists/* install vim-tiny # vi for config file editing
 
 ## Install Nginx Plus
-
 # Download certificate and key from the customer portal https://cs.nginx.com
 # and copy to the build context
 RUN mkdir -p /etc/ssl/nginx
@@ -15,43 +15,56 @@ COPY etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.crt
 COPY etc/ssl/nginx/nginx-repo.key /etc/ssl/nginx/nginx-repo.key
 RUN chmod 644 /etc/ssl/nginx/*
 
-# Install method A. Install NGINX Plus from repo
+# Install NGINX Plus from repo (https://cs.nginx.com/repo_setup)
 # Get other files required for installation
-RUN wget -q -O /etc/yum.repos.d/nginx-plus-7.repo https://cs.nginx.com/static/files/nginx-plus-7.repo
-RUN yum install -y nginx-plus
+RUN wget http://nginx.org/keys/nginx_signing.key && apt-key add nginx_signing.key \
+&& printf "deb https://plus-pkgs.nginx.com/ubuntu `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/nginx-plus.list \
+&& wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90nginx \
+&& apt-get update \
+&& apt-get -y install --no-install-recommends nginx-plus \
+&& rm -rf /var/lib/apt/lists/*
 
 ## Optional: Install NGINX Plus Modules from repo
-#RUN yum install -y nginx-plus-module-modsecurity
-#RUN yum install -y nginx-plus-module-geoip
-# RUN yum install -y nginx-plus-module-njs
-
-# Install method B. "Offine" Install NGINX Plus from .rpm
-# COPY install/nginx-plus-15-1.el7_4.ngx.x86_64.rpm /tmp/nginx-plus-15-1.el7_4.ngx.x86_64.rpm
-# RUN yum localinstall -y /tmp/nginx-plus-15-1.el7_4.ngx.x86_64.rpm
-
-## Optional: Install NGINX Plus Modules from .rpm
-# Example:
-# COPY install/nginx-plus-module-njs-15+0.2.0-1.el7_4.ngx.x86_64.rpm /tmp/nginx-plus-module-njs-15+0.2.0-1.el7_4.ngx.x86_64.rpm
-# RUN dpkg -i /tmp/nginx-plus-module-njs-15+0.2.0-1.el7_4.ngx.x86_64.rpm
+# See https://www.nginx.com/products/nginx/modules
+# RUN DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-modsecurity && rm -rf /var/lib/apt/lists/*
+# RUN DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-geoip && rm -rf /var/lib/apt/lists/*
+# RUN DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-njs && rm -rf /var/lib/apt/lists/*
 
 # Optional: COPY over any of your SSL certs for HTTPS servers
-# Example:
-#COPY etc/ssl/nginx/www.example.com.crt /etc/ssl/nginx/www.example.com.crt
-#COPY etc/ssl/nginx/www.example.com.key /etc/ssl/nginx/www.example.com.key
+# e.g.
+#COPY etc/ssl/www.example.com.crt /etc/ssl/www.example.com.crt
+#COPY etc/ssl/www.example.com.key /etc/ssl/www.example.com.key
 
 # Optional: Create cache folder and set permissions for proxy caching
-#CMD mkdir -p /var/cache/nginx
-#CMD chown -R nginx /var/cache/nginx
+#CMD mkdir -p /var/cache/nginx \
+#&& chown -R nginx /var/cache/nginx
+
+# Remove default nginx config
+RUN rm /etc/nginx/conf.d/default.conf
+# COPY /etc/nginx (Nginx configuration) directory
+COPY etc/nginx /etc/nginx
+RUN chown -R nginx:nginx /etc/nginx
 
 # Forward request logs to docker log collector
-RUN ln -sf /dev/stdout /var/log/nginx/access.log
-RUN ln -sf /dev/stderr /var/log/nginx/error.log
+RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+&& ln -sf /dev/stderr /var/log/nginx/error.log
 
-# COPY /etc/nginx (Nginx configuration) directory and other directories as
-# necessary, for example, /usr/share/nginx/html for static files
-COPY etc/nginx /etc/nginx
-#COPY usr/share/nginx/html /usr/share/nginx/html # Optional
+# Raise the limits to successfully run benchmarks
+RUN ulimit -c -m -s -t unlimited
+
+# Remove the cert/keys from the image
+RUN rm /etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.key
+
+## Install NGINX Controller Agent ##
+COPY install/agent/install.sh /tmp
+COPY install/agent/agent_install.sh /tmp
+RUN add-apt-repository universe \
+&& apt-get update \
+&& DEBIAN_FRONTEND=noninteractive apt-get install -qq -y python2.7 && rm -rf /var/lib/apt/lists/* \
+&& sh /tmp/agent_install.sh \
+&& rm /tmp/install.sh /tmp/agent_install.sh
 
 # EXPOSE ports, HTTP 80, HTTPS 443 and, Nginx status page 8080
-EXPOSE 80 8080 443
+EXPOSE 80 443 8080
+STOPSIGNAL SIGTERM
 CMD ["nginx", "-g", "daemon off;"]
