@@ -27,7 +27,7 @@ pipeline {
             stage('Build') {
                 steps {
                     script {
-                        env.DISTRO = alpine3.8
+                        env.DISTRO = "alpine3.8"
                     }
                     sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                     sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
