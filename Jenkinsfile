@@ -32,7 +32,7 @@ pipeline {
                         port8080 = port8080 + 1;
                     }
                 }
-            },
+            }
             stage('centos7') {
                 steps {
                     script {
