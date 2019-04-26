@@ -22,21 +22,21 @@ pipeline {
                                 sh 'docker images'
                                 sh 'docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO'
                         }
+                    },
+                        centos7: {
+                             withEnv(['DISTRO=centos7',
+                            'port80=802',
+                            'port443=4432',
+                            'port8080=80802'
+                            ]){
+                                sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker images'
+                                sh 'docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO'
+                        }
                     }//,
-                    //     centos7: {
-                    //          withEnv(['DISTRO=centos7',
-                    //         'port80=802',
-                    //         'port443=4432',
-                    //         'port8080=80802'
-                    //         ]){
-                    //             sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
-                    //             sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
-                    //             sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
-                    //             sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
-                    //             sh 'docker images'
-                    //             sh 'docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO'
-                    //     }
-                    // },
                     //     debian9: {
                     //          withEnv(['DISTRO=debian9',
                     //         'port80=803',
