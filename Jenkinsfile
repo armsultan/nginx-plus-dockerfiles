@@ -1,6 +1,7 @@
 def port80 = 80
 def port443 = 443
 def port8080 = 8080
+def DISTRO = ""
 
 pipeline {
     agent {
@@ -17,7 +18,7 @@ pipeline {
                 parallel(
                 a: {
                     script {
-                            def DISTRO = "alpine3.9"
+                            DISTRO = "alpine3.9"
                         }
                         sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                         sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
@@ -35,7 +36,7 @@ pipeline {
                 },
                 b: {
                     script {
-                            def DISTRO = "centos7"
+                            DISTRO = "centos7"
                         }
                         sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                         sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
