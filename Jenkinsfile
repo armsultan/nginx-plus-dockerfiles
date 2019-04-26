@@ -36,10 +36,12 @@ pipeline {
                         DOCKER_IMAGE = docker.build DISTRO + ":$BUILD_NUMBER"
                     }
                     sh 'docker images'
-                    $port80 = port80 + 1;
-                    port443 = port443 + 1;
-                    port8080 = port8080 + 1;
                     sh 'docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO'
+                    script {
+                        port80 = port80 + 1;
+                        port443 = port443 + 1;
+                        port8080 = port8080 + 1;
+                    }
                 }
             }
     }
