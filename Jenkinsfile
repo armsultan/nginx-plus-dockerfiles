@@ -22,6 +22,8 @@ pipeline {
                     sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE --no-cache'
                     sh 'docker images'
                     sh "docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO"
+                    //kill all running containers
+                    sh 'docker kill $(docker ps -q)'
                 }
             }
             stage('centos7') {
@@ -38,6 +40,62 @@ pipeline {
                     sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE --no-cache'
                     sh 'docker images'
                     sh "docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO"
+                    //kill all running containers
+                    sh 'docker kill $(docker ps -q)'
+                }
+            }
+            stage('debian9') {
+                steps {
+                    script {
+                        env.DISTRO = "debian9"
+                        env.port80 = 80
+                        env.port443 = 443
+                        env.port8080 = 8080
+                    }
+                    sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
+                    sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
+                    sh 'cp $WORKSPACE/Dockerfiles/$DISTRO/Dockerfile $WORKSPACE'
+                    sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE --no-cache'
+                    sh 'docker images'
+                    sh "docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO"
+                    //kill all running containers
+                    sh 'docker kill $(docker ps -q)'
+                }
+            }
+            stage('ubuntu16.04') {
+                steps {
+                    script {
+                        env.DISTRO = "ubuntu16.04"
+                        env.port80 = 80
+                        env.port443 = 443
+                        env.port8080 = 8080
+                    }
+                    sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
+                    sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
+                    sh 'cp $WORKSPACE/Dockerfiles/$DISTRO/Dockerfile $WORKSPACE'
+                    sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE --no-cache'
+                    sh 'docker images'
+                    sh "docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO"
+                    //kill all running containers
+                    sh 'docker kill $(docker ps -q)'
+                }
+            }
+            stage('ubuntu18.04') {
+                steps {
+                    script {
+                        env.DISTRO = "ubuntu18.04"
+                        env.port80 = 80
+                        env.port443 = 443
+                        env.port8080 = 8080
+                    }
+                    sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
+                    sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
+                    sh 'cp $WORKSPACE/Dockerfiles/$DISTRO/Dockerfile $WORKSPACE'
+                    sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE --no-cache'
+                    sh 'docker images'
+                    sh "docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO"
+                    //kill all running containers
+                    sh 'docker kill $(docker ps -q)'
                 }
             }
     }
