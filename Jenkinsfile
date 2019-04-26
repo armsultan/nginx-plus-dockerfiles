@@ -38,7 +38,7 @@ pipeline {
                         }
                     },
                         debian9: {
-                             withEnv(['DISTRO = debian9',
+                             withEnv(['DISTRO=debian9',
                             'port80=803',
                             'port443=4433',
                             'port8080=80803'
@@ -52,10 +52,10 @@ pipeline {
                         }
                     },
                         ubuntu16_04: {
-                            withEnv(['DISTRO = ubuntu16.04',
-                            'port80 = 804',
-                            'port443 = 4434',
-                            'port8080 = 80804'
+                            withEnv(['DISTRO=ubuntu16.04',
+                            'port80=804',
+                            'port443=4434',
+                            'port8080=80804'
                             ]){
                                 sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                                 sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
@@ -66,7 +66,7 @@ pipeline {
                         }
                     },
                         ubuntu18_04: {
-                            withEnv(['DISTRO = ubuntu18.04',
+                            withEnv(['DISTRO=ubuntu18.04',
                             'port80=805',
                             'port443=4435',
                             'port8080=80805'
