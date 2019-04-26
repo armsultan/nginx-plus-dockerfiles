@@ -6,7 +6,7 @@ pipeline {
         pollSCM('') // Enabling being build on Push
     }
     stages {
-        stage('run-parallel-branches') {
+        stage('run-parallel-builds') {
             steps {
                 parallel(
                         alpine3_9: {
