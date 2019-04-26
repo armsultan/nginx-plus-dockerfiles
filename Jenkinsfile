@@ -24,9 +24,9 @@ pipeline {
                         }
                     },
                     withEnv(['DISTRO = centos7',
-                            'port80 = 80',
-                            'port443 = 443',
-                            'port8080 = 8080'
+                            'port80 = 802',
+                            'port443 = 4432',
+                            'port8080 = 80802'
                     ]){
                         centos7: {
                                 sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
@@ -38,9 +38,9 @@ pipeline {
                         }
                     },
                     withEnv(['DISTRO = debian9',
-                            'port80 = 80',
-                            'port443 = 443',
-                            'port8080 = 8080'
+                            'port80 = 803',
+                            'port443 = 4433',
+                            'port8080 = 80803'
                     ]){
                         debian9: {
                                 sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
@@ -52,9 +52,9 @@ pipeline {
                         }
                     },
                     withEnv(['DISTRO = ubuntu16.04',
-                            'port80 = 80',
-                            'port443 = 443',
-                            'port8080 = 8080'
+                            'port80 = 804',
+                            'port443 = 4434',
+                            'port8080 = 80804'
                     ]){
                         ubuntu16_04: {
                                 sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
@@ -66,9 +66,9 @@ pipeline {
                         }
                     },
                     withEnv(['DISTRO = ubuntu18.04',
-                            'port80 = 80',
-                            'port443 = 443',
-                            'port8080 = 8080'
+                            'port80 = 805',
+                            'port443 = 4435',
+                            'port8080 = 80805'
                     ]){
                         ubuntu18_04: {
                                 sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
