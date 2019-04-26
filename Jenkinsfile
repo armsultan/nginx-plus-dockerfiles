@@ -11,46 +11,48 @@ pipeline {
     }
     // environment {
     // }
-    stage('run-parallel-branches') {
-        steps {
-            parallel(
-            a: {
-                script {
-                        env.DISTRO = "alpine3.9"
-                    }
-                    sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
-                    sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
-                    sh 'cp $WORKSPACE/Dockerfiles/$DISTRO/Dockerfile $WORKSPACE'
-                    sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE --no-cache'
-                    sh 'docker images'
-                    sh "docker run -d -p 80:${port80} -p 443:${port443} -p 8080:${port8080} nginx-plus-$DISTRO"
-                    // Remove the image built in this build
-                    sh 'docker rmi $DOCKER_IMAGE_TAG'
+    stages {
+        stage('run-parallel-branches') {
+            steps {
+                parallel(
+                a: {
                     script {
-                        port80 = port80 + 1;
-                        port443 = port443 + 1;
-                        port8080 = port8080 + 1;
-                    }
-            },
-            b: {
-                script {
-                        env.DISTRO = "centos7"
-                    }
-                    sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
-                    sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
-                    sh 'cp $WORKSPACE/Dockerfiles/$DISTRO/Dockerfile $WORKSPACE'
-                    sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE --no-cache'
-                    sh 'docker images'
-                    sh "docker run -d -p 80:${port80} -p 443:${port443} -p 8080:${port8080} nginx-plus-$DISTRO"
-                    // Remove the image built in this build
-                    sh 'docker rmi $DOCKER_IMAGE_TAG'
+                            env.DISTRO = "alpine3.9"
+                        }
+                        sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
+                        sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
+                        sh 'cp $WORKSPACE/Dockerfiles/$DISTRO/Dockerfile $WORKSPACE'
+                        sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE --no-cache'
+                        sh 'docker images'
+                        sh "docker run -d -p 80:${port80} -p 443:${port443} -p 8080:${port8080} nginx-plus-$DISTRO"
+                        // Remove the image built in this build
+                        sh 'docker rmi $DOCKER_IMAGE_TAG'
+                        script {
+                            port80 = port80 + 1;
+                            port443 = port443 + 1;
+                            port8080 = port8080 + 1;
+                        }
+                },
+                b: {
                     script {
-                        port80 = port80 + 1;
-                        port443 = port443 + 1;
-                        port8080 = port8080 + 1;
-                    }
+                            env.DISTRO = "centos7"
+                        }
+                        sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
+                        sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
+                        sh 'cp $WORKSPACE/Dockerfiles/$DISTRO/Dockerfile $WORKSPACE'
+                        sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE --no-cache'
+                        sh 'docker images'
+                        sh "docker run -d -p 80:${port80} -p 443:${port443} -p 8080:${port8080} nginx-plus-$DISTRO"
+                        // Remove the image built in this build
+                        sh 'docker rmi $DOCKER_IMAGE_TAG'
+                        script {
+                            port80 = port80 + 1;
+                            port443 = port443 + 1;
+                            port8080 = port8080 + 1;
+                        }
+                }
+                )
             }
-            )
         }
     }
     // stages {
