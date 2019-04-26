@@ -31,7 +31,7 @@ pipeline {
                     }
                     sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                     sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
-                    sh 'docker build -t nginx-plus-$DISTRO -f $WORKSPACE/Dockerfiles/$DISTRO --no-cache'
+                    sh 'docker build -t nginx-plus-$DISTRO -f $WORKSPACE/Dockerfiles/$DISTRO/Dockerfile --no-cache'
                     script {
                         DOCKER_IMAGE = docker.build DISTRO + ":$BUILD_NUMBER"
                     }
