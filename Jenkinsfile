@@ -10,10 +10,10 @@ pipeline {
             steps {
                 parallel(
                         alpine3_9: {
-                            withEnv(['DISTRO = alpine3.9',
-                            'port80 = 80',
-                            'port443 = 443',
-                            'port8080 = 8080'
+                            withEnv(['DISTRO=alpine3.9',
+                            'port80=80',
+                            'port443=443',
+                            'port8080=8080'
                             ]){
                                 sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                                 sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
@@ -24,10 +24,10 @@ pipeline {
                         }
                     },
                         centos7: {
-                             withEnv(['DISTRO = centos7',
-                            'port80 = 802',
-                            'port443 = 4432',
-                            'port8080 = 80802'
+                             withEnv(['DISTRO=centos7',
+                            'port80=802',
+                            'port443=4432',
+                            'port8080=80802'
                             ]){
                                 sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                                 sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
@@ -39,9 +39,9 @@ pipeline {
                     },
                         debian9: {
                              withEnv(['DISTRO = debian9',
-                            'port80 = 803',
-                            'port443 = 4433',
-                            'port8080 = 80803'
+                            'port80=803',
+                            'port443=4433',
+                            'port8080=80803'
                             ]){
                                 sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                                 sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
@@ -67,9 +67,9 @@ pipeline {
                     },
                         ubuntu18_04: {
                             withEnv(['DISTRO = ubuntu18.04',
-                            'port80 = 805',
-                            'port443 = 4435',
-                            'port8080 = 80805'
+                            'port80=805',
+                            'port443=4435',
+                            'port8080=80805'
                             ]){
                                 sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                                 sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
