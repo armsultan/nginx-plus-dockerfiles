@@ -20,7 +20,7 @@ pipeline {
                                 sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
                                 sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
                                 sh 'docker images'
-                                sh 'docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO'
+                                sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
                         }
                     },
                         centos7: {
@@ -34,7 +34,7 @@ pipeline {
                                 sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
                                 sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
                                 sh 'docker images'
-                                sh 'docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO'
+                                sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
                         }
                     }//,
                     //     debian9: {
