@@ -16,10 +16,9 @@ pipeline {
             steps {
                 parallel(
                 a: {
-                    // script {
-                    //         env.DISTRO = "alpine3.9"
-                    //     }
-                        def DISTRO = "alpine3.9"
+                    script {
+                            DISTRO = "alpine3.9"
+                        }
                         sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                         sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
                         sh 'cp $WORKSPACE/Dockerfiles/$DISTRO/Dockerfile $WORKSPACE'
@@ -35,10 +34,9 @@ pipeline {
                         }
                 },
                 b: {
-                    // script {
-                    //         env.DISTRO = "centos7"
-                    //     }
-                        def DISTRO = "centos7"
+                    script {
+                            DISTRO = "centos7"
+                        }
                         sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                         sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
                         sh 'cp $WORKSPACE/Dockerfiles/$DISTRO/Dockerfile $WORKSPACE'
