@@ -18,7 +18,7 @@ pipeline {
                 parallel(
                 a: {
                     script {
-                            DISTRO = "alpine3.9"
+                            DISTRO = sh(returnStdout: true, script: 'echo alpine3.9')
                         }
                         sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                         sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
@@ -36,7 +36,7 @@ pipeline {
                 },
                 b: {
                     script {
-                            DISTRO = "centos7"
+                            DISTRO = sh(returnStdout: true, script: 'echo centos7')
                         }
                         sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                         sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
