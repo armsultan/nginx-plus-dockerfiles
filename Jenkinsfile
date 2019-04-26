@@ -1,6 +1,8 @@
 def port80 = 80
 def port443 = 443
 def port8080 = 8080
+def mocksport = 0 as Integer
+def port = 1000 as Integer
 
 pipeline {
     agent {
@@ -36,6 +38,10 @@ pipeline {
                     // script {
                     //     DOCKER_IMAGE = docker.build DISTRO + ":$BUILD_NUMBER"
                     // }
+                    port = (port as Integer) % 99 + 9000;
+                    mocksport = (port as Integer) + 1;
+                    echo "Application will be deployed on port ${port}"
+                    echo "Mocks will be deployed on port ${mocksport}"​​​​​​​​​​​​​
                     sh 'docker images'
                     echo "${port80} -p 443:${port443} -p 8080:${port8080}"
                     sh 'docker run -d -p 80:"${port80}" -p 443:${port443} -p 8080:${port8080} nginx-plus-$DISTRO'
