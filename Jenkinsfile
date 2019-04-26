@@ -22,7 +22,7 @@ pipeline {
                                 sh 'docker images'
                                 sh 'docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO'
                         }
-                    // },
+                    }//,
                     //     centos7: {
                     //          withEnv(['DISTRO=centos7',
                     //         'port80=802',
