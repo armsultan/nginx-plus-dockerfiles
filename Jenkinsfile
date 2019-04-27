@@ -37,6 +37,20 @@ pipeline {
                                 sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
                         }
                     },
+                        centos7_6: {
+                             withEnv(['DISTRO=centos7.6',
+                            'port80=81',
+                            'port443=444',
+                            'port8080=8081'
+                            ]){
+                                sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker images'
+                                sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
+                        }
+                    },
                         debian9: {
                              withEnv(['DISTRO=debian9',
                             'port80=82',

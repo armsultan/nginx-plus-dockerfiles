@@ -15,9 +15,9 @@ RUN chmod 644 /etc/ssl/nginx/* \
 # Install prerequisite packages and vim for editing:
  && yum install -y --setopt=tsflags=nodocs wget ca-certificates bind-utils wget bind-utils vim-minimal \
  # Prepare repo config and install NGINX Plus (https://cs.nginx.com/repo_setup)
- && wget -q -O /etc/yum.repos.d/nginx-plus-7.repo https://cs.nginx.com/static/files/nginx-plus-7.4.repo \
+ && wget -q -O /etc/yum.repos.d/nginx-plus-7.repo https://cs.nginx.com/static/files/nginx-plus-7.repo \
  # Set specifc version of Nginx plus
- && sed -i 's/plus-pkgs.nginx.com\//plus-pkgs.nginx.com\/R'"${NGINX_PLUS_VERSION}"'\//g' /etc/yum.repos.d/nginx-plus-7.4.repo \
+ && sed -i 's/plus-pkgs.nginx.com\//plus-pkgs.nginx.com\/R'"${NGINX_PLUS_VERSION}"'\//g' /etc/yum.repos.d/nginx-plus-7.repo \
  && yum install -y --setopt=tsflags=nodocs nginx-plus \
  ## Optional: Install NGINX Plus Modules from repo
  # See https://www.nginx.com/products/nginx/modules
