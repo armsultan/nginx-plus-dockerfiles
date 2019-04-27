@@ -17,6 +17,9 @@ RUN chmod 644 /etc/apk/cert* \
  #&& apk add nginx-plus-module-modsecurity \
  #&& apk add nginx-plus-module-geoip \
  #&& apk add nginx-plus-module-njs \
+ ## Optional: Install Tools
+ # curl
+ && apk add curl \
  # Clear apk cache
  && rm -rf /var/cache/apk/* \
  # Remove default nginx config
