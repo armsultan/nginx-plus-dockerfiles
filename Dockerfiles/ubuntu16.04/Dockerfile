@@ -13,14 +13,14 @@ COPY etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.crt
 COPY etc/ssl/nginx/nginx-repo.key /etc/ssl/nginx/nginx-repo.key
 RUN  chmod 644 /etc/ssl/nginx/* \
     # Install prerequisite packages and vim for editing:
-    apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends apt-transport-https lsb-release ca-certificates wget dnsutils gnupg vim-tiny && rm -rf /var/lib/apt/lists/* \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends apt-transport-https lsb-release ca-certificates wget dnsutils gnupg vim-tiny \
     # Install NGINX Plus from repo (https://cs.nginx.com/repo_setup)
     && wget http://nginx.org/keys/nginx_signing.key && apt-key add nginx_signing.key \
     && printf "deb https://plus-pkgs.nginx.com/R${NGINX_PLUS_VERSION}/ubuntu `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/nginx-plus.list \
     && wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90nginx \
     && apt-get update \
-    && RUN DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus \
+    && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus \
     ## Optional: Install NGINX Plus Modules from repo
     # See https://www.nginx.com/products/nginx/modules
     # &&  DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-modsecurity \
