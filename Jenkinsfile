@@ -64,21 +64,21 @@ pipeline {
                                 sh 'docker images'
                                 sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
                         }
-                    }//,
-                    //     ubuntu18_04: {
-                    //         withEnv(['DISTRO=ubuntu18.04',
-                    //         'port80=84',
-                    //         'port443=447',
-                    //         'port8080=8084'
-                    //         ]){
-                    //             sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
-                    //             sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
-                    //             sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
-                    //             sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
-                    //             sh 'docker images'
-                    //             sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
-                    //     }
-                    // }
+                    },
+                        ubuntu18_04: {
+                            withEnv(['DISTRO=ubuntu18.04',
+                            'port80=84',
+                            'port443=447',
+                            'port8080=8084'
+                            ]){
+                                sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker images'
+                                sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
+                        }
+                    }
                 )
             }
         }
@@ -86,20 +86,11 @@ pipeline {
     post {
         cleanup {
             echo 'Cleanup'
-            //kill all running containers
-            sh 'docker kill $(docker ps -q)'
-            // delete all stopped containers
-            sh 'docker rm $(docker ps -a -q)'
-            // delete all images
-            sh 'docker rmi $(docker images -q)'
             //clean up any resources — images, containers, volumes, and networks — that are dangling (not associated with a container) and any stopped containers and all unused images (not just dangling images)
             sh 'docker system prune -a -f'
-            // Delete all others:
-            //clean up any resources — images, containers, volumes, and networks — that are dangling (not associated with a container) and any stopped containers and all unused images (not just dangling images)
-            //sh 'docker system prune -a -f'
-            // docker stop $(docker ps -q)
-            // docker rm $(docker ps -a -q)
-            // docker rmi $(docker images -q -f dangling=true)
+            sh 'docker stop $(docker ps -q)'
+            sh 'docker rm $(docker ps -a -q)'
+            sh 'docker rmi $(docker images -q -f dangling=true)'
             sh 'docker images'
             deleteDir()
         }
