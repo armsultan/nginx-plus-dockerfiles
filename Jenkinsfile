@@ -25,9 +25,9 @@ pipeline {
                     },
                         centos7: {
                              withEnv(['DISTRO=centos7',
-                            'port80=802',
-                            'port443=4432',
-                            'port8080=80802'
+                            'port80=81',
+                            'port443=444',
+                            'port8080=8081'
                             ]){
                                 sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                                 sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
