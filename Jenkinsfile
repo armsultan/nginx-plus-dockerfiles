@@ -50,21 +50,21 @@ pipeline {
                                 sh 'docker images'
                                 sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
                         }
+                    },
+                        ubuntu16_04: {
+                            withEnv(['DISTRO=ubuntu16.04',
+                            'port80=83',
+                            'port443=446',
+                            'port8080=8083'
+                            ]){
+                                sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker images'
+                                sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
+                        }
                     }//,
-                    //     ubuntu16_04: {
-                    //         withEnv(['DISTRO=ubuntu16.04',
-                    //         'port80=83',
-                    //         'port443=446',
-                    //         'port8080=8083'
-                    //         ]){
-                    //             sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
-                    //             sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
-                    //             sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
-                    //             sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
-                    //             sh 'docker images'
-                    //             sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
-                    //     }
-                    // },
                     //     ubuntu18_04: {
                     //         withEnv(['DISTRO=ubuntu18.04',
                     //         'port80=84',
