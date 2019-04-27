@@ -36,49 +36,49 @@ pipeline {
                                 sh 'docker images'
                                 sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
                         }
-                    }//,
-                    //     debian9: {
-                    //          withEnv(['DISTRO=debian9',
-                    //         'port80=803',
-                    //         'port443=4433',
-                    //         'port8080=80803'
-                    //         ]){
-                    //             sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
-                    //             sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
-                    //             sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
-                    //             sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
-                    //             sh 'docker images'
-                    //             sh 'docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO'
-                    //     }
-                    // },
-                    //     ubuntu16_04: {
-                    //         withEnv(['DISTRO=ubuntu16.04',
-                    //         'port80=804',
-                    //         'port443=4434',
-                    //         'port8080=80804'
-                    //         ]){
-                    //             sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
-                    //             sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
-                    //             sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
-                    //             sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
-                    //             sh 'docker images'
-                    //             sh 'docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO'
-                    //     }
-                    // },
-                    //     ubuntu18_04: {
-                    //         withEnv(['DISTRO=ubuntu18.04',
-                    //         'port80=805',
-                    //         'port443=4435',
-                    //         'port8080=80805'
-                    //         ]){
-                    //             sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
-                    //             sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
-                    //             sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
-                    //             sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
-                    //             sh 'docker images'
-                    //             sh 'docker run -d -p 80:$port80 -p 443:$port443 -p 8080:$port8080 nginx-plus-$DISTRO'
-                    //     }
-                    // }
+                    },
+                        debian9: {
+                             withEnv(['DISTRO=debian9',
+                            'port80=82',
+                            'port443=445',
+                            'port8080=8082'
+                            ]){
+                                sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker images'
+                                sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
+                        }
+                    },
+                        ubuntu16_04: {
+                            withEnv(['DISTRO=ubuntu16.04',
+                            'port80=83',
+                            'port443=446',
+                            'port8080=8083'
+                            ]){
+                                sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker images'
+                                sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
+                        }
+                    },
+                        ubuntu18_04: {
+                            withEnv(['DISTRO=ubuntu18.04',
+                            'port80=84',
+                            'port443=447',
+                            'port8080=8084'
+                            ]){
+                                sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker images'
+                                sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
+                        }
+                    }
                 )
             }
         }
