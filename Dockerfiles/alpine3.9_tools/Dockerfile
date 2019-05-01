@@ -3,6 +3,7 @@ FROM alpine:3.9
 LABEL maintainer="armand@nginx.com"
 
 ENV VEGETA_VERSION 12.3.0
+ENV SIEGE_VERSION=3.1.4
 
 ## Install Nginx Plus
 # Download certificate and key from the customer portal https://cs.nginx.com
@@ -42,8 +43,17 @@ RUN chmod 644 /etc/apk/cert* \
  && tar xzf /tmp/vegeta.tar.gz \
  && rm /tmp/vegeta.tar.gz \
  && apk del .build-deps \
+ # Siege load generator
+ && apk add g++ make \
+ && curl http://download.joedog.org/siege/siege-$SIEGE_VERSION.tar.gz > siege-$SIEGE_VERSION.tar.gz \
+ && tar -xf siege-${SIEGE_VERSION}.tar.gz \
+ && cd siege-${SIEGE_VERSION} \
+ && ./configure \
+ && make install \
  # wrk
  && apk add wrk \
+ # vim
+ && apk add vim \
  # Clear apk cache
  && rm -rf /var/cache/apk/*
 
