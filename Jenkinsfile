@@ -65,8 +65,8 @@ pipeline {
                                 sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
                         }
                     },
-                        ubuntu16_04: {
-                            withEnv(['DISTRO=ubuntu16.04',
+                        debian10: {
+                             withEnv(['DISTRO=debian9',
                             'port80=84',
                             'port443=447',
                             'port8080=8084'
@@ -79,8 +79,8 @@ pipeline {
                                 sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
                         }
                     },
-                        ubuntu18_04: {
-                            withEnv(['DISTRO=ubuntu18.04',
+                        ubuntu16_04: {
+                            withEnv(['DISTRO=ubuntu16.04',
                             'port80=85',
                             'port443=448',
                             'port8080=8085'
@@ -93,8 +93,8 @@ pipeline {
                                 sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
                         }
                     },
-                    ubuntu18_10: {
-                            withEnv(['DISTRO=ubuntu18.10',
+                        ubuntu18_04: {
+                            withEnv(['DISTRO=ubuntu18.04',
                             'port80=86',
                             'port443=449',
                             'port8080=8086'
@@ -107,11 +107,25 @@ pipeline {
                                 sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
                         }
                     },
-                        alpine3_9_tools: {
-                            withEnv(['DISTRO=alpine3.9_tools',
+                    ubuntu18_10: {
+                            withEnv(['DISTRO=ubuntu18.10',
                             'port80=87',
                             'port443=450',
                             'port8080=8087'
+                            ]){
+                                sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
+                                sh 'cp -R $WORKSPACE/etc $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker build -t nginx-plus-$DISTRO $WORKSPACE/Dockerfiles/$DISTRO'
+                                sh 'docker images'
+                                sh 'docker run -d -p $port80:80 -p $port443:443 -p $port8080:8080 nginx-plus-$DISTRO'
+                        }
+                    },
+                        alpine3_9_tools: {
+                            withEnv(['DISTRO=alpine3.9_tools',
+                            'port80=88',
+                            'port443=451',
+                            'port8080=8088'
                             ]){
                                 sh 'cp /etc/ssl/nginx/nginx-repo.key $WORKSPACE/etc/ssl/nginx'
                                 sh 'cp /etc/ssl/nginx/nginx-repo.crt $WORKSPACE/etc/ssl/nginx'
