@@ -19,17 +19,58 @@ RUN chmod 644 /etc/ssl/nginx/* \
  # Set specifc version of Nginx plus
  && sed -i 's/plus-pkgs.nginx.com\//plus-pkgs.nginx.com\/R'"${NGINX_PLUS_VERSION}"'\//g' /etc/yum.repos.d/nginx-plus-7.repo \
  && yum install -y --setopt=tsflags=nodocs nginx-plus \
- ## Optional: Install NGINX Plus Modules from repo
- # See https://www.nginx.com/products/nginx/modules
- #&& yum install -y --setopt=tsflags=nodocs nginx-plus-module-modsecurity \
- #&& yum install -y --setopt=tsflags=nodocs nginx-plus-module-geoip \
- #&& yum install -y --setopt=tsflags=nodocs nginx-plus-module-njs \
+ ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
+ ## See https://www.nginx.com/products/nginx/modules
+ ## For debug binaries, install module ending with "-dbg"
+ ## brotli compression dynamic modules
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-brotli \
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-brotli-dbg \
+ ## cookie flag dynamic module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-cookie-flag \
+ ## encrypted session dynamic module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-encrypted-session \
+ ## GeoIP dynamic modules
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-geoip \
+ ## GeoIP2 dynamic modules
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-geoip2 \
+ ## headers-more dynamic module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-headers-more \
+ ## image filter dynamic module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-image-filter \
+ ## Lua dynamic module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-lua \
+ ## ModSecurity dynamic module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-modsecurity \
+ ## NDK dynamic module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-ndk \
+ ## njs dynamic modules
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-njs \
+ ## OpenTracing dynamic module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-opentracing \
+ ## Passenger dynamic module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-passenger \
+ ## Perl dynamic module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-perl \
+ ## Prometheus exporter NJS module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-prometheus \
+ ## RTMP dynamic module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-rtmp \
+ ## set-misc dynamic module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-set-misc \
+ ## substitution dynamic module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-subs-filter \
+ ## xslt dynamic module
+ # && yum install -y --setopt=tsflags=nodocs nginx-plus-module-xslt \
+ # Cleanup
  && yum clean all \
  # Remove default nginx config
  && rm /etc/nginx/conf.d/default.conf \
  # Optional: Create cache folder and set permissions for proxy caching
  && mkdir -p /var/cache/nginx \
- && chown -R nginx /var/cache/nginx
+ && chown -R nginx /var/cache/nginx \
+ # Optional: Create State file folder and set permissions
+ && mkdir -p /var/lib/nginx/state \
+ && chown -R nginx /var/lib/nginx/state
 
 # Optional: COPY over any of your SSL certs for HTTPS servers
 # e.g.

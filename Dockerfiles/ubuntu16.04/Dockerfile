@@ -21,17 +21,58 @@ RUN  chmod 644 /etc/ssl/nginx/* \
     && wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90nginx \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus \
-    ## Optional: Install NGINX Plus Modules from repo
-    # See https://www.nginx.com/products/nginx/modules
-    # &&  DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-modsecurity \
-    # &&  DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-geoip \
+    ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
+    ## See https://www.nginx.com/products/nginx/modules
+    ## For debug binaries, install module ending with "-dbg"
+    ## brotli compression dynamic modules
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-brotli \
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-brotli-dbg \
+    ## cookie flag dynamic module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-cookie-flag \
+    ## encrypted session dynamic module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-encrypted-session \
+    ## GeoIP dynamic modules
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-geoip \
+    ## GeoIP2 dynamic modules
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-geoip2 \
+    ## headers-more dynamic module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-headers-more \
+    ## image filter dynamic module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-image-filter \
+    ## Lua dynamic module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-lua \
+    ## ModSecurity dynamic module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-modsecurity \
+    ## NDK dynamic module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-ndk \
+    ## njs dynamic modules
     # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-njs \
+    ## OpenTracing dynamic module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-opentracing \
+    ## Passenger dynamic module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-passenger \
+    ## Perl dynamic module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-perl \
+    ## Prometheus exporter NJS module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-prometheus \
+    ## RTMP dynamic module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-rtmp \
+    ## set-misc dynamic module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-set-misc \
+    ## substitution dynamic module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-subs-filter \
+    ## xslt dynamic module
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-xslt \
+    # Cleanup
     && rm -rf /var/lib/apt/lists/* \
     # Remove default nginx config
     && rm /etc/nginx/conf.d/default.conf \
     # Optional: Create cache folder and set permissions for proxy caching
     && mkdir -p /var/cache/nginx \
-    && chown -R nginx /var/cache/nginx
+    && chown -R nginx /var/cache/nginx \
+    # Optional: Create State file folder and set permissions
+    && mkdir -p /var/lib/nginx/state \
+    && chown -R nginx /var/lib/nginx/state
 
 # Optional: COPY over any of your SSL certs for HTTPS servers
 # e.g.

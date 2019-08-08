@@ -15,16 +15,56 @@ RUN chmod 644 /etc/apk/cert* \
  && wget -O /etc/apk/keys/nginx_signing.rsa.pub https://nginx.org/keys/nginx_signing.rsa.pub \
  && printf "https://plus-pkgs.nginx.com/alpine/v`egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release`/main\n" | tee -a /etc/apk/repositories \
  && apk add nginx-plus \
- ## Optional: Install NGINX Plus Modules from repo
- # See https://www.nginx.com/products/nginx/modules
- #&& apk add nginx-plus-module-modsecurity \
- #&& apk add nginx-plus-module-geoip \
- #&& apk add nginx-plus-module-njs \
+ ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
+ ## See https://www.nginx.com/products/nginx/modules
+ ## For debug binaries, install module ending with "-dbg"
+ ## brotli compression dynamic modules
+ # && apk add nginx-plus-module-brotli \
+ # && apk add nginx-plus-module-brotli-dbg \
+ ## cookie flag dynamic module
+ # && apk add nginx-plus-module-cookie-flag \
+ ## encrypted session dynamic module
+ # && apk add nginx-plus-module-encrypted-session \
+ ## GeoIP dynamic modules
+ # && apk add nginx-plus-module-geoip \
+ ## GeoIP2 dynamic modules
+ # && apk add nginx-plus-module-geoip2 \
+ ## headers-more dynamic module
+ # && apk add nginx-plus-module-headers-more \
+ ## image filter dynamic module
+ # && apk add nginx-plus-module-image-filter \
+ ## Lua dynamic module
+ # && apk add nginx-plus-module-lua \
+ ## ModSecurity dynamic module
+ # && apk add nginx-plus-module-modsecurity \
+ ## NDK dynamic module
+ # && apk add nginx-plus-module-ndk \
+ ## njs dynamic modules
+ # && apk add nginx-plus-module-njs \
+ ## OpenTracing dynamic module
+ # && apk add nginx-plus-module-opentracing \
+ ## Passenger dynamic module
+ # && apk add nginx-plus-module-passenger \
+ ## Perl dynamic module
+ # && apk add nginx-plus-module-perl \
+ ## Prometheus exporter NJS module
+ # && apk add nginx-plus-module-prometheus \
+ ## RTMP dynamic module
+ # && apk add nginx-plus-module-rtmp \
+ ## set-misc dynamic module
+ # && apk add nginx-plus-module-set-misc \
+ ## substitution dynamic module
+ # && apk add nginx-plus-module-subs-filter \
+ ## xslt dynamic module
+ # && apk add nginx-plus-module-xslt \
  # Remove default nginx config
  && rm /etc/nginx/conf.d/default.conf \
  # Optional: Create cache folder and set permissions for proxy caching
  && mkdir -p /var/cache/nginx \
  && chown -R nginx /var/cache/nginx \
+ # Optional: Create State file folder and set permissions
+ && mkdir -p /var/lib/nginx/state \
+ && chown -R nginx /var/lib/nginx/state \
  ## Optional: Install Tools
  # curl
  && apk add curl \

@@ -2,8 +2,6 @@ FROM alpine:3.9
 
 LABEL maintainer="armand@nginx.com"
 
-ENV VEGETA_VERSION 12.3.0
-
 ## Install Nginx Plus
 # Download certificate and key from the customer portal https://cs.nginx.com
 # and copy to the build context and set correct permissions
@@ -19,33 +17,16 @@ RUN chmod 644 /etc/apk/cert* \
  #&& apk add nginx-plus-module-modsecurity \
  #&& apk add nginx-plus-module-geoip \
  #&& apk add nginx-plus-module-njs \
+ ## Optional: Install Tools
+ # curl
+ && apk add curl \
+ # Clear apk cache
+ && rm -rf /var/cache/apk/* \
  # Remove default nginx config
  && rm /etc/nginx/conf.d/default.conf \
  # Optional: Create cache folder and set permissions for proxy caching
  && mkdir -p /var/cache/nginx \
- && chown -R nginx /var/cache/nginx \
- ## Optional: Install Tools
- # curl
- && apk add curl \
- # jq
- && apk add jq \
- # httpie
- && apk add --no-cache python3 \
- && pip3 install --upgrade pip setuptools httpie \
- && rm -r /root/.cache \
- # Vegeta load generator
- && set -ex \
- && apk add --no-cache ca-certificates \
- && apk add --no-cache --virtual .build-deps openssl \
- && wget -q "https://github.com/tsenart/vegeta/releases/download/cli/v$VEGETA_VERSION/vegeta-$VEGETA_VERSION-linux-amd64.tar.gz" -O /tmp/vegeta.tar.gz \
- && cd bin \
- && tar xzf /tmp/vegeta.tar.gz \
- && rm /tmp/vegeta.tar.gz \
- && apk del .build-deps \
- # wrk
- && apk add wrk \
- # Clear apk cache
- && rm -rf /var/cache/apk/*
+ && chown -R nginx /var/cache/nginx
 
 # Optional: COPY over any of your SSL certs for HTTPS servers
 # e.g.
