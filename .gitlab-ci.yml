@@ -198,7 +198,7 @@ clean_up:
   script:
     - unset port_http
     - unset port_https
-    - docker stop $(docker ps -q)
+    # - docker stop $(docker ps -q)
     - docker system prune -a -f
     - docker rm $(docker ps -a -q)
     - docker images
