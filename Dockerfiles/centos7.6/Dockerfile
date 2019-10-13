@@ -3,7 +3,7 @@ FROM centos:centos7.6.1810
 LABEL maintainer="armand@nginx.com"
 
 # Set Nginx Plus version
-ENV NGINX_PLUS_VERSION 18
+ENV NGINX_PLUS_VERSION 19
 
 ## Install Nginx Plus
 # Download certificate and key from the customer portal https://cs.nginx.com

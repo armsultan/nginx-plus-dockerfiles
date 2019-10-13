@@ -5,6 +5,9 @@ LABEL maintainer="armand@nginx.com"
 ENV VEGETA_VERSION 12.3.0
 ENV SIEGE_VERSION=3.1.4
 
+# Set Nginx Plus version
+ENV NGINX_PLUS_VERSION 19
+
 ## Install Nginx Plus
 # Download certificate and key from the customer portal https://cs.nginx.com
 # and copy to the build context and set correct permissions
