@@ -7,7 +7,7 @@ ENV VEGETA_VERSION 12.3.0
 ENV SIEGE_VERSION=3.1.4
 
 # Set Nginx Plus version
-ENV NGINX_PLUS_VERSION 18
+ENV NGINX_PLUS_VERSION "nginx-plus~=18"
 
 ## Install Nginx Plus
 # Download certificate and key from the customer portal https://cs.nginx.com
@@ -18,7 +18,7 @@ RUN chmod 644 /etc/apk/cert* \
  # Prepare repo config and install NGINX Plus (https://cs.nginx.com/repo_setup)
  && wget -O /etc/apk/keys/nginx_signing.rsa.pub https://nginx.org/keys/nginx_signing.rsa.pub \
  && printf "https://plus-pkgs.nginx.com/alpine/v`egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release`/main\n" | tee -a /etc/apk/repositories \
- && apk add nginx-plus \
+ && apk add "${NGINX_PLUS_VERSION}" \
  ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
  ## See https://www.nginx.com/products/nginx/modules
  ## For debug binaries, install module ending with "-dbg"
