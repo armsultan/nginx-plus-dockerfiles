@@ -2,6 +2,9 @@ FROM alpine:3.9
 
 LABEL maintainer="armand@nginx.com"
 
+# Set Nginx Plus version
+ENV NGINX_PLUS_VERSION 18
+
 ## Install Nginx Plus
 # Download certificate and key from the customer portal https://cs.nginx.com
 # and copy to the build context and set correct permissions

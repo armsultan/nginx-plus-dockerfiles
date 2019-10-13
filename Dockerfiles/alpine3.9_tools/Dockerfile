@@ -2,8 +2,12 @@ FROM alpine:3.9
 
 LABEL maintainer="armand@nginx.com"
 
+# Set Tools version
 ENV VEGETA_VERSION 12.3.0
 ENV SIEGE_VERSION=3.1.4
+
+# Set Nginx Plus version
+ENV NGINX_PLUS_VERSION 18
 
 ## Install Nginx Plus
 # Download certificate and key from the customer portal https://cs.nginx.com
