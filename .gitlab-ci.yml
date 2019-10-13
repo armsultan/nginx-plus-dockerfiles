@@ -198,9 +198,9 @@ clean_up:
   script:
     - unset port_http
     - unset port_https
-    # - docker stop $(docker ps -q)
-    - docker system prune -a -f
-    - docker rm $(docker ps -a -q)
+    #DELETE ORPHANED AND DANGLING VOLUMES
+    - docker volume rm $(docker volume ls -qf dangling=true)
+    - docker rmi $(docker images -q -f dangling=true)
     - docker images
 ## Keywords description & links to the documentation
 ## Basics: https://about.gitlab.com/blog/2016/07/29/the-basics-of-gitlab-ci/
