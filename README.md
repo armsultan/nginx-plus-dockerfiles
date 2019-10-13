@@ -3,8 +3,7 @@
     * Download your Keys and Certificates from the [customer portal](https://cs.nginx.com/) or from
     an activated evaluation, `nginx-repo.crt` and `nginx-repo.crt` into `etc/ssl/nginx/`
     * Place your Nginx congurations into `etc/nginx/` (and sub directories like `etc/nginx/conf.d` and `etc/nginx/stream.conf.d`)
-    * If you are doing an "offline" install of Nginx Plus, place the Nginx Plus binaries, `.rpm` or `.deb` files, in the `install` folder
- 2. Copy a `Dockerfile` for your preferred linux distro from the `Dockerfiles` folder into the root folder
+ 2. Copy the `Dockerfile` for your preferred linux distro found in the `Dockerfiles` folder into the root folder
  3. Edit (add or uncomment) the `Dockerfile` to include any necessary commands to install addtional modules
  4. Make sure the `nginx.conf` (`/etc/nginx/nginx.conf`) includes the necessary `load_modules` directives to load addtional modules installed
  5. Build an image from your Dockerfile:
