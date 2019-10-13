@@ -21,5 +21,5 @@
     ```
  7. If no custom Nginx confiugrations are provided, the default nginx webpage will be published on `http://localhost` (port `:80`)
  8. If the provided file, `status_api.conf` is loaded then the NGINX Plus live activity monitoring dashboard can be
-    accessed from [`http://localhost:`](http://localhost:8080)
+    accessed from [`http://localhost:8080`](http://localhost:8080)
  9. For troubleshooting or quick nginx configuration edits, you can ssh into container: `docker exec -it <container name> /bin/bash`
