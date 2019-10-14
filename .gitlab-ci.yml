@@ -48,9 +48,6 @@ alpine3.9: # CI_JOB_NAME
     - docker run --name	$NAME -d -p $port_http:80 -p $port_https:443 -p $port_api:8080 $NAME
     - docker tag $NAME ${CI_REGISTRY}/${CI_PROJECT_PATH}:r18-$CI_JOB_NAME
     - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:r18-$CI_JOB_NAME
-
-    - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:R18-$CI_JOB_NAME
-
     - docker stop $NAME
     - docker rm $NAME
 
