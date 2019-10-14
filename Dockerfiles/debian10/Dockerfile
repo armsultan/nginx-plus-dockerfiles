@@ -34,7 +34,7 @@ RUN chmod 644 /etc/ssl/nginx/* \
   && echo "Acquire::https::plus-pkgs.nginx.com::Verify-Host \"true\";" >> /etc/apt/apt.conf.d/90nginx \
   && echo "Acquire::https::plus-pkgs.nginx.com::SslCert     \"/etc/ssl/nginx/nginx-repo.crt\";" >> /etc/apt/apt.conf.d/90nginx \
   && echo "Acquire::https::plus-pkgs.nginx.com::SslKey      \"/etc/ssl/nginx/nginx-repo.key\";" >> /etc/apt/apt.conf.d/90nginx \
-  && printf "deb https://plus-pkgs.nginx.com/R${NGINX_PLUS_VERSION}/debian stretch nginx-plus\n" > /etc/apt/sources.list.d/nginx-plus.list \
+  && printf "deb https://plus-pkgs.nginx.com/R${NGINX_PLUS_VERSION}/debian buster nginx-plus\n" > /etc/apt/sources.list.d/nginx-plus.list \
   && apt-get update && apt-get install -y nginx-plus \
   ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
   ## See https://www.nginx.com/products/nginx/modules

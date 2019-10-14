@@ -176,7 +176,7 @@ ubuntu16.04: # CI_JOB_NAME
     - docker stop $NAME
     - docker rm $NAME
 
-ubuntu18.10: # CI_JOB_NAME
+ubuntu18.04: # CI_JOB_NAME
   stage: build
   variables:
     NAME: nginx-plus-$CI_JOB_NAME
