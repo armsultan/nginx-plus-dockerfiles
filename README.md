@@ -20,12 +20,17 @@ A Bunch of Dockerfiles for [NGINX Plus](https://www.nginx.com/products/nginx/).
     ```bash
     # Start a new container and publish container ports 80, 443 and 8080 to the docker host
     # (Replace "--name nginx-plus-name" is a descriptive name)
-    $ docker run -d -p 80:80 -p 443:443 -p 8080:8080 nginx-plus-name --name nginx-plus-name
-    # OR
+    $ docker run -d -p 80:80 -p 443:443 -p 8080:8080 \
+                 --name nginx-plus-name nginx-plus-name
+    ```
+    **OR**
+    ```bash
     # mount local a directory (or directories) using -v flag
-   docker run -d -p 80:80 -p 443:443 -p 8080:8080 -v "$(pwd)/etc/nginx/conf.d:/etc/nginx/conf.d" --name $NAME $NAME
+    docker run -d -p 80:80 -p 443:443 -p 8080:8080 \
+               -v "$(pwd)/etc/nginx/conf.d:/etc/nginx/conf.d" \
+               --name nginx-plus-name nginx-plus-name
     ```
  7. For troubleshooting or quick nginx configuration edits, you `exec` into the container:
-   ```bash
-   docker exec -it <container name> /bin/bash
-   ```
+    ```bash
+    docker exec -it <container name> /bin/bash
+    ```
