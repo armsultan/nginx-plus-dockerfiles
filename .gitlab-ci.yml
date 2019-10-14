@@ -209,7 +209,7 @@ clean_up:
   script:
     - unset port_http
     - unset port_https
-    - docker system prune
+    - docker system prune -f
     - docker images
 ## Keywords description & links to the documentation
 ## Basics: https://about.gitlab.com/blog/2016/07/29/the-basics-of-gitlab-ci/
