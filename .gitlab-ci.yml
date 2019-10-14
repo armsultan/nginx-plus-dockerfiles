@@ -176,7 +176,7 @@ ubuntu16.04: # CI_JOB_NAME
     - docker stop $NAME
     - docker rm $NAME
 
-ubuntu18.10: # CI_JOB_NAME
+ubuntu18.04: # CI_JOB_NAME
   stage: build
   variables:
     NAME: nginx-plus-$CI_JOB_NAME
@@ -190,7 +190,7 @@ ubuntu18.10: # CI_JOB_NAME
     - export port_http=$((port_http+1))
     - export port_https=$((port_https+1))
     - docker tag $NAME ${CI_REGISTRY}/${CI_PROJECT_PATH}:$CI_JOB_NAME
-    - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:$CI_JOB_NAME
+    - docker push ${CI_REGISTRY}/$CI_JOB_NAME:R18
     - docker stop $NAME
     - docker rm $NAME
 
