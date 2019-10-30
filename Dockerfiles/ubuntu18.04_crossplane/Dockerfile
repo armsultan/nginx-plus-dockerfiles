@@ -23,7 +23,7 @@ RUN chmod 644 /etc/ssl/nginx/* \
     && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus \
     ## Install NGINX Crossplane
     ## see https://github.com/nginxinc/crossplane
-    && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends python-pip \
+    && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends python-pip jq \
     && pip install crossplane \
     ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
     ## See https://www.nginx.com/products/nginx/modules
