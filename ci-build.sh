@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Tested on ubuntu 18.04
 # Generating random number between $FPORT and $EPORT for port binding
 FPORT=1025;

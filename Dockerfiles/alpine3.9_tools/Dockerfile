@@ -93,7 +93,7 @@ RUN chmod 644 /etc/apk/cert* \
  # wrk
  && apk add wrk \
  # vim
- && apk add vim \
+ # && apk add vim \
  # Clear apk cache
  && rm -rf /var/cache/apk/*
 
