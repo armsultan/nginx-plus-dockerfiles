@@ -1,17 +1,48 @@
 # NGINX Plus Dockerfiles
 
 A Bunch of Dockerfiles for [NGINX Plus](https://www.nginx.com/products/nginx/).
-**Just add licenses**
+**Just add [licenses](https://www.nginx.com/free-trial-request/)**
 
-# Build and run NGINX Plus Docker container
+## Build and run NGINX Plus Docker containers (Using Script)
 
- 1. Copy and paste your `nginx-repo.crt` and `nginx-repo.key` into `etc/ssl/nginx` directory
+Run `./build-nginx-plus.sh [build_name]`, where `[build_name]` one of:
+
+| `[build_name]`            | Description           |
+| ------------------------- |:--------------------------------------------------:| 
+|`alpine3.9`                | Alpine Linux 3.9 with NGINX Plus                   |
+|`alpine3.9_tools`          | Alpine Linux 3.9 with NGINX Plus and HTTP tools    |
+|`alpine3.10`               | Alpine Linux 3.10 with NGINX Plus                  |
+|`alpine3.11`               | Alpine Linux 3.11 with NGINX Plus                  |
+|`amazonlinux`              | Amazon Linux with NGINX Plus                       |
+|`amazonlinux2`             | Amazon Linux 2 with NGINX Plus                     |
+|~~`amazonlinux2_controller`~~  | ~~Amazon Linux 2 with NGINX Plus and Controller agent~~ |
+|`centos7`                  | Centos 7 with NGINX Plus                           |
+|`centos7.6`                | Centos 7.6 with NGINX Plus                         |
+|`centos7.6_nap`            | Centos 7.6 with NGINX App Protect                  |
+|~~`centos7.6_controller`~~     | ~~Centos 7.6 with NGINX Plus and Controller agent~~    |
+|`centos8`                  | Centos 8 with NGINX Plus                           |
+|`debian9`                  | Debian 9 with NGINX Plus                           |
+|~~`debian9_controller`~~       | ~~Debian 9 with NGINX Plus and Controller agent~~      |
+|`debian10`                 | Debian 10 with NGINX Plus                          |
+|`ubuntu18.04`              | Ubuntu 18.04 with NGINX Plus                       |
+|~~`ubuntu18.04_controller`~~   | ~~Ubuntu 18.04 with NGINX Plus and Controller agent~~  |
+|`ubuntu18.04_crosplane`    | Ubuntu 18.04 with NGINX Plus and Crossplane        |
+|`ubuntu18.04_nap`          | Ubuntu 18.04 with NGINX App Protect                |
+|`ubuntu20.04`              | Ubuntu 20.04 with NGINX Plus                       |
+
+
+## Build NGINX Plus Docker container Manually
+
+ 1. Copy and paste your `nginx-repo.crt` and `nginx-repo.key` into `etc/ssl/nginx` 
+    directory, inside the `NAP` folder for [NGINX App Protect](https://www.nginx.com/products/nginx-app-protect/) or
+    in the `NGINX-Plus` folder for [NGINX Plus](https://www.nginx.com/products/nginx/)
 
  2. Build an image from your Dockerfile:
     ```bash
     # Run command from the folder containing the `Dockerfile`
     $ docker build -t nginx-plus .
     ```
+
  3. Start the Nginx Plus container, e.g.:
     ```bash
     # Start a new container and publish container ports 80, 443 and 8080 to the host
@@ -43,7 +74,7 @@ A Bunch of Dockerfiles for [NGINX Plus](https://www.nginx.com/products/nginx/).
     sudo docker logs -f [CONTAINER ID]
     ```
 
-# Build and run NGINX Plus Docker container with NGINX Controller Agent
+# TODO: Build and run NGINX Plus Docker container with NGINX Controller Agent
 
 The Controller Agent can be deployed in a Docker environment to monitor and / or
 configure NGINX processes inside Docker containers. The agent can collect most
