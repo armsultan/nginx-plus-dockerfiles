@@ -10,10 +10,16 @@ ENV NGINX_VERSION 22
 # https://docs.nginx.com/nginx-app-protect/releases/
 ENV NAP_VERSION   3.158.1
 ENV PKG_RELEASE   1~bionic
+
 # Define Threat Campaigns Update
 # Uncomment this block and the versioned nginx Packages in the main RUN
 # instruction to install a specific release 
 ENV NAP_THREAT_CAMPAIGN_DATE    2020.09.16
+
+# Define Attack Signature Update
+# Uncomment this block and the versioned nginx Packages in the main RUN
+# instruction to install a specific release 
+ENV NAP_ATTACK_SIGNATURE_DATE    2020.09.17
 
 ## Install Nginx Plus
 # Download certificate and key from the customer portal https://cs.nginx.com
@@ -33,7 +39,8 @@ RUN set -x \
     && wget https://cs.nginx.com/static/keys/nginx_signing.key && apt-key add nginx_signing.key \
     && printf "deb https://plus-pkgs.nginx.com/ubuntu `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/nginx-plus.list \
     && wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90nginx \
-    # Installing Threat Campaigns from NGINX Plus App Protect Security Updates repository
+    # Installing NGINX Plus App Protect Attack Signatures and 
+    # Threat Campaigns from NGINX Plus App Protect Security Updates repository
     # (https://docs.nginx.com/nginx-app-protect/admin-guide/)
     && printf "deb https://app-protect-security-updates.nginx.com/ubuntu/ `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/app-protect-security-updates.list \
     && wget https://cs.nginx.com/static/keys/app-protect-security-updates.key && apt-key add app-protect-security-updates.key \
@@ -48,12 +55,20 @@ RUN set -x \
     # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends app-protect \
     && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends app-protect=${NGINX_VERSION}+${NAP_VERSION}-${PKG_RELEASE} \
     #
+    ## Install Attack Signature Updates
+    # List available versions: 
+    && apt-cache policy app-protect-attack-signatures \
+    ## Uncomment one:
+    # DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends app-protect-attack-signatures \
+    && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends app-protect-attack-signatures=${NAP_ATTACK_SIGNATURE_DATE}-${PKG_RELEASE} \
+    #
     ## Install Threat Campaigns Updates
     # List available versions: 
     && apt-cache policy app-protect-threat-campaigns \
     ## Uncomment one:
     # DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends app-protect-threat-campaigns \
     && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends app-protect-threat-campaigns=${NAP_THREAT_CAMPAIGN_DATE}-${PKG_RELEASE} \
+    #
     ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
     ## See https://www.nginx.com/products/nginx/modules
     ## Some modules include debug binaries, install module ending with "-dbg"

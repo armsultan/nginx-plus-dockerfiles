@@ -77,7 +77,7 @@ RUN set -x \
     # Raise the limits to successfully run benchmarks
     && ulimit -c -m -s -t unlimited \
     # Cleanup
-    && apt-get remove --purge --auto-remove -y gnupg \  
+    && apt-get remove --purge --auto-remove -y gnupg lsb-release apt-utils \  
     && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx-plus.list \
     && rm -rf /etc/apt/apt.conf.d/90nginx \
     && rm -rf nginx_signing.key \

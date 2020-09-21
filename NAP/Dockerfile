@@ -10,10 +10,16 @@ ENV NGINX_VERSION 22
 # https://docs.nginx.com/nginx-app-protect/releases/
 ENV NAP_VERSION   3.158.1
 ENV PKG_RELEASE   1.el7.ngx  
+
 # Define Threat Campaigns Update
 # Uncomment this block and the versioned nginx Packages in the main RUN
 # instruction to install a specific release 
 ENV NAP_THREAT_CAMPAIGN_DATE    2020.09.16
+
+# Define Attack Signature Update
+# Uncomment this block and the versioned nginx Packages in the main RUN
+# instruction to install a specific release 
+ENV NAP_ATTACK_SIGNATURE_DATE    2020.09.17
 
 ## Install Nginx App Protect
 # Download certificate and key from the customer portal https://cs.nginx.com
@@ -32,7 +38,8 @@ RUN set -x \
     && yum install -y --setopt=tsflags=nodocs wget ca-certificates epel-release bind-utils wget bind-utils vim-minimal \
     # Install NGINX App Protect from repo (https://docs.nginx.com/nginx-app-protect/admin-guide/)
     && wget -P /etc/yum.repos.d https://cs.nginx.com/static/files/nginx-plus-7.repo \
-    # Installing Threat Campaigns from NGINX Plus App Protect Security Updates repository
+    # Installing NGINX Plus App Protect Attack Signatures and 
+    # Threat Campaigns from NGINX Plus App Protect Security Updates repository
     # (https://docs.nginx.com/nginx-app-protect/admin-guide/)
     && wget -P /etc/yum.repos.d https://cs.nginx.com/static/files/app-protect-security-updates-7.repo \
     #
@@ -44,12 +51,20 @@ RUN set -x \
     # && yum install -y --setopt=tsflags=nodocs app-protect \
     && yum install -y --setopt=tsflags=nodocs app-protect-${NGINX_VERSION}+${NAP_VERSION} \
     #
+    ## Install Attack Signature Updates
+    # List available versions: 
+    && yum --showduplicates list app-protect-attack-signatures \
+    ## Uncomment one:
+    # && yum install -y --setopt=tsflags=nodocs app-protect-attack-signatures \
+    && yum install -y --setopt=tsflags=nodocs app-protect-attack-signatures-${NAP_ATTACK_SIGNATURE_DATE} \
+    #    
     ## Install Threat Campaigns Updates
     # List available versions: 
     && yum --showduplicates list app-protect-threat-campaigns \
     ## Uncomment one:
     # && yum install -y --setopt=tsflags=nodocs app-protect-threat-campaigns \
     && yum install -y --setopt=tsflags=nodocs app-protect-threat-campaigns-${NAP_THREAT_CAMPAIGN_DATE} \
+    #
     ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
     ## See https://www.nginx.com/products/nginx/modules
     ## Some modules include debug binaries, install module ending with "-dbg"

@@ -53,25 +53,26 @@ RUN chmod 644 /etc/ssl/nginx/* \
     # NGINX Javascript module needed for APIM
     nginx-plus-module-njs  \
     #
-    # Cleanup
-    && rm -rf /var/lib/apt/lists/* \
     #
     # Install Controller Agent
     && curl -k -sS -L ${CONTROLLER_URL}/install/controller/ > install.sh \
     && sed -i 's/^assume_yes=""/assume_yes="-y"/' install.sh \
     && sh ./install.sh -y
-
-
-# COPY /etc/nginx (Nginx configuration) directory
-COPY etc/nginx /etc/nginx
-RUN chown -R nginx:nginx /etc/nginx \
+    # Set Permissions
+    && chown -R nginx:nginx /etc/nginx \
     # Forward request logs to docker log collector
     && ln -sf /dev/stdout /var/log/nginx-controller/agent.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log \
     # Raise the limits to successfully run benchmarks
     && ulimit -c -m -s -t unlimited \
+    # Cleanup
+    && yum clean all \
+    && rm -rf /etc/yum.repos.d/* \
     # Remove the cert/keys from the image
     && rm /etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.key
+
+# COPY /etc/nginx (Nginx configuration) directory
+COPY etc/nginx /etc/nginx
 
 # EXPOSE common ports, HTTP 80 and HTTPS 443
 EXPOSE 80 443

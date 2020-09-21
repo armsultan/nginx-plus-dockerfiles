@@ -25,7 +25,7 @@ RUN set -x \
     && adduser --system --disabled-login --ingroup nginx --no-create-home --home /nonexistent --gecos "nginx user" --shell /bin/false --uid 1001 nginx \
     # Install prerequisite packages, vim for editing, then Install NGINX Plus
     && apt-get update && apt-get upgrade -y \
-    && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends apt-transport-https lsb-release ca-certificates wget dnsutils gnupg vim-tiny apt-utils \
+    && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends apt-transport-https lsb-release ca-certificates curl wget dnsutils gnupg vim-tiny apt-utils \
     # Install NGINX Plus from repo (https://cs.nginx.com/repo_setup)
     && wget http://nginx.org/keys/nginx_signing.key && apt-key add nginx_signing.key \
     && printf "deb https://plus-pkgs.nginx.com/ubuntu `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/nginx-plus.list \
@@ -169,7 +169,7 @@ RUN set -x \
     # Raise the limits to successfully run benchmarks
     && ulimit -c -m -s -t unlimited \
     # Cleanup
-    && apt-get remove --purge --auto-remove -y gnupg1 \  
+    && apt-get remove --purge --auto-remove -y gnupg lsb-release apt-utils \  
     && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx-plus.list \
     && rm -rf /etc/apt/apt.conf.d/90nginx \
     && rm -rf nginx_signing.key \

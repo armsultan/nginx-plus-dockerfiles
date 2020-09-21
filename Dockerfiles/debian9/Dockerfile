@@ -26,25 +26,10 @@ RUN set -x \
   && adduser --system --disabled-login --ingroup nginx --no-create-home --home /nonexistent --gecos "nginx user" --shell /bin/false --uid 101 nginx \
   # Install prerequisite packages, vim for editing, then Install NGINX Plus
   && apt-get update && apt-get upgrade -y \
-  && apt-get install --no-install-recommends --no-install-suggests -y apt-transport-https ca-certificates gnupg1 curl procps vim-tiny less apt-utils \
-  && \
-  NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62; \
-  found=''; \
-  for server in \
-  ha.pool.sks-keyservers.net \
-  hkp://keyserver.ubuntu.com:80 \
-  hkp://p80.pool.sks-keyservers.net:80 \
-  pgp.mit.edu \
-  ; do \
-  echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
-  apt-key adv --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
-  done; \
-  test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
-  echo "Acquire::https::plus-pkgs.nginx.com::Verify-Peer \"true\";" >> /etc/apt/apt.conf.d/90nginx \
-  && echo "Acquire::https::plus-pkgs.nginx.com::Verify-Host \"true\";" >> /etc/apt/apt.conf.d/90nginx \
-  && echo "Acquire::https::plus-pkgs.nginx.com::SslCert     \"/etc/ssl/nginx/nginx-repo.crt\";" >> /etc/apt/apt.conf.d/90nginx \
-  && echo "Acquire::https::plus-pkgs.nginx.com::SslKey      \"/etc/ssl/nginx/nginx-repo.key\";" >> /etc/apt/apt.conf.d/90nginx \
-  && printf "deb https://plus-pkgs.nginx.com/debian stretch nginx-plus\n" > /etc/apt/sources.list.d/nginx-plus.list \
+  && apt-get install --no-install-recommends --no-install-suggests -y apt-transport-https ca-certificates gnupg1 lsb-release curl wget procps vim-tiny less apt-utils \
+  && wget https://cs.nginx.com/static/keys/nginx_signing.key && apt-key add nginx_signing.key \
+  && printf "deb https://plus-pkgs.nginx.com/debian `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/nginx-plus.list \
+  && wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90nginx \
   && apt-get update \
   #
   ## Install the latest release of NGINX Plus and/or NGINX Plus modules
@@ -54,8 +39,6 @@ RUN set -x \
   ## Uncomment one:
   && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus \
   # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus=${NGINX_VERSION}-${PKG_RELEASE} \
-  #&& DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-dbg \
-  #&& DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
   #
   ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
   ## See https://www.nginx.com/products/nginx/modules
@@ -186,9 +169,10 @@ RUN set -x \
   # Raise the limits to successfully run benchmarks
   && ulimit -c -m -s -t unlimited \
   # Cleanup
-  && apt-get remove --purge --auto-remove -y gnupg1 \  
+  && apt-get remove --purge --auto-remove -y gnupg1 lsb-release apt-utils \  
   && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx-plus.list \
   && rm -rf /etc/apt/apt.conf.d/90nginx \
+  && rm -rf nginx_signing.key \
   # Remove the cert/keys from the image
   && rm /etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.key
 

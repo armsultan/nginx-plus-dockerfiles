@@ -11,10 +11,17 @@ ENV NGINX_VERSION 22
 # https://docs.nginx.com/nginx-app-protect/releases/
 ENV NAP_VERSION   3.158.1  
 ENV PKG_RELEASE   1~stretch
+
 # Define Threat Campaigns Update
 # Uncomment this block and the versioned nginx Packages in the main RUN
 # instruction to install a specific release 
 ENV NAP_THREAT_CAMPAIGN_DATE    2020.09.16
+
+# Define Attack Signature Update
+# Uncomment this block and the versioned nginx Packages in the main RUN
+# instruction to install a specific release 
+ENV NAP_ATTACK_SIGNATURE_DATE    2020.09.17
+
 
 ## Install Nginx App Protect
 # Download certificate and key from the customer portal https://cs.nginx.com
@@ -29,27 +36,19 @@ RUN set -x \
   && adduser --system --disabled-login --ingroup nginx --no-create-home --home /nonexistent --gecos "nginx user" --shell /bin/false --uid 101 nginx \
   # Install prerequisite packages, vim for editing, then Install NGINX Plus
   && apt-get update && apt-get upgrade -y \
-  && apt-get install --no-install-recommends --no-install-suggests -y apt-transport-https ca-certificates gnupg1 curl procps vim-tiny less apt-utils \
-  && \
-  NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62; \
-  found=''; \
-  for server in \
-  ha.pool.sks-keyservers.net \
-  hkp://keyserver.ubuntu.com:80 \
-  hkp://p80.pool.sks-keyservers.net:80 \
-  pgp.mit.edu \
-  ; do \
-  echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
-  apt-key adv --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
-  done; \
-  test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
+  && apt-get install --no-install-recommends --no-install-suggests -y apt-transport-https ca-certificates lsb-release apt-utils curl wget procps vim-tiny gnupg1 less \
   # Install NGINX App Protect from repo (https://docs.nginx.com/nginx-app-protect/admin-guide/)
-  wget https://cs.nginx.com/static/keys/nginx_signing.key && apt-key add nginx_signing.key \
+  && wget https://cs.nginx.com/static/keys/nginx_signing.key && apt-key add nginx_signing.key \
+  && wget https://cs.nginx.com/static/keys/app-protect.key && apt-key add app-protect.key \
   && printf "deb https://plus-pkgs.nginx.com/debian `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/nginx-plus.list \
   && wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90nginx \
-  # Installing Threat Campaigns from NGINX Plus App Protect Security Updates repository
+  # Installing NGINX Plus App Protect Attack Signatures repository
   # (https://docs.nginx.com/nginx-app-protect/admin-guide/)
-  && printf "deb https://app-protect-security-updates.nginx.com/debian/ `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/app-protect-security-updates.list \
+  && printf "deb https://app-protect-sigs.nginx.com/debian `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/app-protect-sigs.list \
+  && wget https://cs.nginx.com/static/keys/app-protect-security-updates.key && apt-key add app-protect-security-updates.key \
+  && wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90app-protect-sigs \ 
+  # Installing NGINX Plus App Protect Threat Campaigns Security Updates repository
+  # (https://docs.nginx.com/nginx-app-protect/admin-guide/)
   && wget https://cs.nginx.com/static/keys/app-protect-security-updates.key && apt-key add app-protect-security-updates.key \
   && wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90app-protect-security-updates \
   && apt-get update \
@@ -62,12 +61,20 @@ RUN set -x \
   # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends app-protect \
   && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends app-protect=${NGINX_VERSION}+${NAP_VERSION}-${PKG_RELEASE} \
   #
+  ## Install Attack Signature Update
+  # List available versions: 
+  && apt-cache policy app-protect-attack-signatures \
+  # ## Uncomment one:
+  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends app-protect-attack-signatures \
+  && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends app-protect-attack-signatures=${NAP_ATTACK_SIGNATURE_DATE}-${PKG_RELEASE} \
+  #
   ## Install Threat Campaigns Updates
   # List available versions: 
   && apt-cache policy app-protect-threat-campaigns \
   ## Uncomment one:
-  # DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends app-protect-threat-campaigns \
+  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends app-protect-threat-campaigns \
   && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends app-protect-threat-campaigns=${NAP_THREAT_CAMPAIGN_DATE}-${PKG_RELEASE} \
+  #
   ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
   ## See https://www.nginx.com/products/nginx/modules
   ## Some modules include debug binaries, install module ending with "-dbg"
@@ -197,12 +204,14 @@ RUN set -x \
   # Raise the limits to successfully run benchmarks
   && ulimit -c -m -s -t unlimited \
   # Cleanup
-  && apt-get remove --purge --auto-remove -y gnupg1 \  
+  && apt-get remove --purge --auto-remove -y gnupg1 lsb-release apt-utils \  
   && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx-plus.list \
   && rm -rf /etc/apt/sources.list.d/app-protect-security-updates.list \
-  && rm -rf /etc/apt/apt.conf.d/90app-protect-security-updates \
   && rm -rf /etc/apt/apt.conf.d/90nginx \
+  && rm -rf /etc/apt/apt.conf.d/90app-protect-security-updates \
+  && rm -rf /etc/apt/apt.conf.d/90app-protect-sigs \
   && rm -rf nginx_signing.key \
+  && rm -rf app-protect.key \
   && rm -rf app-protect-security-updates.key \
   # Remove the cert/keys from the image
   && rm /etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.key

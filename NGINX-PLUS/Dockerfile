@@ -1,4 +1,4 @@
-FROM amazonlinux:2
+FROM amazonlinux:1
 
 LABEL maintainer="armand@f5.com"
 
@@ -9,7 +9,7 @@ ENV NGINX_VERSION 22
 # https://nginx.org/en/docs/njs/changes.html
 ENV NJS_VERSION   0.4.3   
 # https://plus-pkgs.nginx.com
-ENV PKG_RELEASE   1.amzn2.ngx  
+ENV PKG_RELEASE   1.amzn1.ngx 
 
 ## Install Nginx Plus
 # Download certificate and key from the customer portal https://cs.nginx.com
@@ -27,7 +27,7 @@ RUN set -x \
     && usermod -s /sbin/nologin nginx \
     && usermod -L nginx \
     # Prepare repo config and install NGINX Plus https://docs.nginx.com/nginx/admin-guide/installing-nginx/installing-nginx-plus/
-    && wget -P /etc/yum.repos.d https://cs.nginx.com/static/files/nginx-plus-amazon2.repo \
+    && wget -P /etc/yum.repos.d https://cs.nginx.com/static/files/nginx-plus-amazon.repo \
     #
     ## Install the latest release of NGINX App Protect and/or NGINX Plus modules
     ## Optionally use versioned packages over defaults to specify a release
@@ -150,6 +150,7 @@ RUN set -x \
     #nginx-plus-module-xslt-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
     ## NGINX Sync Script nginx-sync.sh 
     #nginx-sync \
+    # Cleanup
     # Remove default nginx config
     && rm /etc/nginx/conf.d/default.conf \
     # Optional: Create cache folder and set permissions for proxy caching
