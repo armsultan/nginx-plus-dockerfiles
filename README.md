@@ -8,7 +8,7 @@ A Bunch of Dockerfiles for [NGINX Plus](https://www.nginx.com/products/nginx/).
 Run `./build-nginx-plus.sh [build_name]`, where `[build_name]` one of:
 
 | `[build_name]`            | Description           |
-| ------------------------- |:--------------------------------------------------:| 
+| ------------------------- |--------------------------------------------------| 
 |`alpine3.9`                | Alpine Linux 3.9 with NGINX Plus                   |
 |`alpine3.9_tools`          | Alpine Linux 3.9 with NGINX Plus and HTTP tools    |
 |`alpine3.10`               | Alpine Linux 3.10 with NGINX Plus                  |
