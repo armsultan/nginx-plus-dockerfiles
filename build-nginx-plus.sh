@@ -2,21 +2,74 @@
 # Usage EXAMPLE: ./build-nginx-plus.sh ubuntu18.04
 distro="$(tr [A-Z] [a-z] <<< "$1")" # set to lowercase
 
-# Pull changes
-git pull --no-edit
+# Check Dockerfile type
+is_controller='_controller'
+is_nap='_nap'
 
-# remove Dockerfile here
-rm Dockerfile
+# Optional: Pull Git changes
+# git pull --no-edit
 
-# copy desired Dockerfile
-cp Dockerfiles/$distro/Dockerfile .
+#
+# Build Controller Agent Docker container
+#
+if grep -q "$is_controller" <<< "$distro"; then
+    # Set build directory
+    build_dir='./CONTROLLER-AGENT'
+    
+    # remove Dockerfile here (if exists)
+    rm $build_dir/Dockerfile || true
 
-# Build and tag it as "nginx-plus-[distro]"
-docker build -t nginx-plus-$distro . --pull --no-cache # No caching
-# docker build -t nginx-plus-$distro
+    # copy desired Dockerfile
+    cp Dockerfiles/$distro/Dockerfile $build_dir
+    
+    # Build and tag it as "nginx-agent-[distro]"
+    docker build -t nginx-agent-$distro $build_dir --pull --no-cache # No caching
 
-# Show all docker containers build with names containing "nginx-plus-"
-printf "\n"
-printf "Nginx Plus containers built:"
-printf "\n"
-docker images | grep nginx-plus-
+    # Show all docker containers build with names containing "nginx-plus-"
+    printf "\n"
+    printf "Nginx Plus with Controller Agent containers built:"
+    printf "\n"
+    docker images | grep nginx-agent
+#
+# Build NGINX App Protect Docker container
+#
+elif grep -q "$is_nap" <<< "$distro"; then
+    # Set build directory
+    build_dir='./NAP'
+    
+    # remove Dockerfile here (if exists)
+    rm $build_dir/Dockerfile || true
+
+    # copy desired Dockerfile
+    cp Dockerfiles/$distro/Dockerfile $build_dir
+    
+    # Build and tag it as "nginx-app-protect-[distro]"
+    docker build -t nginx-app-protect-$distro $build_dir --pull --no-cache # No caching
+
+    # Show all docker containers build with names containing "nginx-plus-"
+    printf "\n"
+    printf "Nginx App Protect containers built:"
+    printf "\n"
+    docker images | grep nginx-app-protect
+#
+# Build NGINX Plus Docker container
+#
+else
+    # Set build directory
+    build_dir='./NGINX-PLUS'
+    
+    # remove Dockerfile here (if exists)
+    rm $build_dir/Dockerfile || true
+
+    # copy desired Dockerfile
+    cp Dockerfiles/$distro/Dockerfile $build_dir
+    
+    # Build and tag it as "nginx-plus-[distro]"
+    docker build -t nginx-plus-$distro $build_dir --pull --no-cache # No caching
+
+    # Show all docker containers build with names containing "nginx-plus-"
+    printf "\n"
+    printf "Nginx Plus containers built:"
+    printf "\n"
+    docker images | grep nginx-plus
+fi

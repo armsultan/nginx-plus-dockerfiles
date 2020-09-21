@@ -1,41 +1,45 @@
-FROM centos:centos7.6.1810
+FROM ubuntu:20.04
 
 LABEL maintainer="armand@f5.com"
 
 # Define NGINX versions for NGINX Plus and NGINX Plus modules
 # Uncomment this block and the versioned nginxPackages in the main RUN
 # instruction to install a specific release
-ENV NGINX_VERSION 22      
+# https://docs.nginx.com/nginx/releases/
+ENV NGINX_VERSION 22        
 # https://nginx.org/en/docs/njs/changes.html
-ENV NJS_VERSION   0.4.3   
+ENV NJS_VERSION   0.4.3     
 # https://plus-pkgs.nginx.com
-ENV PKG_RELEASE   1.el7.ngx  
 
+ENV PKG_RELEASE   1~focal   
 ## Install Nginx Plus
 # Download certificate and key from the customer portal https://cs.nginx.com
 # and copy to the build context and set correct permissions
 RUN mkdir -p /etc/ssl/nginx
 COPY etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.crt
 COPY etc/ssl/nginx/nginx-repo.key /etc/ssl/nginx/nginx-repo.key
+
 RUN set -x \
     && chmod 644 /etc/ssl/nginx/* \
     # Create nginx user/group first, to be consistent throughout Docker variants
-    && groupadd --system --gid 101 nginx \
-    && adduser -g nginx --system --no-create-home --home /nonexistent --shell /bin/false --uid 101 nginx \
-    && usermod -s /sbin/nologin nginx \
-    && usermod -L nginx \
-    # Install prerequisite packages (ca-certificates epel-release) and tools for editing/troubleshooting:
-    && yum install -y --setopt=tsflags=nodocs wget ca-certificates bind-utils wget bind-utils vim-minimal \
-    # Prepare repo config and install NGINX Plus https://docs.nginx.com/nginx/admin-guide/installing-nginx/installing-nginx-plus/
-    && wget -q -O /etc/yum.repos.d/nginx-plus-7.repo https://cs.nginx.com/static/files/nginx-plus-7.4.repo \
+    && addgroup --system --gid 1001 nginx \
+    && adduser --system --disabled-login --ingroup nginx --no-create-home --home /nonexistent --gecos "nginx user" --shell /bin/false --uid 1001 nginx \
+    # Install prerequisite packages, vim for editing, then Install NGINX Plus
+    && apt-get update && apt-get upgrade -y \
+    && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends apt-transport-https lsb-release ca-certificates wget dnsutils gnupg vim-tiny apt-utils \
+    # Install NGINX Plus from repo (https://cs.nginx.com/repo_setup)
+    && wget http://nginx.org/keys/nginx_signing.key && apt-key add nginx_signing.key \
+    && printf "deb https://plus-pkgs.nginx.com/ubuntu `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/nginx-plus.list \
+    && wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90nginx \
+    && apt-get update \
     #
-    ## Install the latest release of NGINX App Protect and/or NGINX Plus modules
+    ## Install the latest release of NGINX Plus and/or NGINX Plus modules
     ## Optionally use versioned packages over defaults to specify a release
     # List available versions: 
-    && yum --showduplicates list nginx-plus \
+    && apt-cache policy nginx-plus \
     ## Uncomment one:
-    # && yum install -y --setopt=tsflags=nodocs nginx-plus \
-    && yum install -y --setopt=tsflags=nodocs nginx-plus-${NGINX_VERSION}-${PKG_RELEASE} \
+    # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus \
+    && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus=${NGINX_VERSION}-${PKG_RELEASE} \
     #
     ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
     ## See https://www.nginx.com/products/nginx/modules
@@ -166,8 +170,10 @@ RUN set -x \
     # Raise the limits to successfully run benchmarks
     && ulimit -c -m -s -t unlimited \
     # Cleanup
-    && yum clean all \
-    && rm -rf /etc/yum.repos.d/* \
+    && apt-get remove --purge --auto-remove -y gnupg \  
+    && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx-plus.list \
+    && rm -rf /etc/apt/apt.conf.d/90nginx \
+    && rm -rf nginx_signing.key \
     # Remove the cert/keys from the image
     && rm /etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.key
 

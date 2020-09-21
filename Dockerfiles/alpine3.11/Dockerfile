@@ -1,4 +1,4 @@
-FROM centos:centos7.6.1810
+FROM alpine:3.11
 
 LABEL maintainer="armand@f5.com"
 
@@ -9,33 +9,75 @@ ENV NGINX_VERSION 22
 # https://nginx.org/en/docs/njs/changes.html
 ENV NJS_VERSION   0.4.3   
 # https://plus-pkgs.nginx.com
-ENV PKG_RELEASE   1.el7.ngx  
+ENV PKG_RELEASE   r1
+
+# Define NGINX versions for NGINX Plus and NGINX Plus modules
+# Uncomment this block and the versioned nginxPackages in the main RUN
+# instruction to install a specific release
+ENV NGINX_VERSION 22      
+# https://nginx.org/en/docs/njs/changes.html
+ENV NJS_VERSION   0.4.3   
+# https://plus-pkgs.nginx.com
+ENV PKG_RELEASE   r1 
 
 ## Install Nginx Plus
 # Download certificate and key from the customer portal https://cs.nginx.com
 # and copy to the build context and set correct permissions
-RUN mkdir -p /etc/ssl/nginx
-COPY etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.crt
-COPY etc/ssl/nginx/nginx-repo.key /etc/ssl/nginx/nginx-repo.key
+COPY etc/ssl/nginx/nginx-repo.crt /etc/apk/cert.pem
+COPY etc/ssl/nginx/nginx-repo.key /etc/apk/cert.key
 RUN set -x \
-    && chmod 644 /etc/ssl/nginx/* \
+    chmod 644 /etc/apk/cert* \
     # Create nginx user/group first, to be consistent throughout Docker variants
-    && groupadd --system --gid 101 nginx \
-    && adduser -g nginx --system --no-create-home --home /nonexistent --shell /bin/false --uid 101 nginx \
-    && usermod -s /sbin/nologin nginx \
-    && usermod -L nginx \
-    # Install prerequisite packages (ca-certificates epel-release) and tools for editing/troubleshooting:
-    && yum install -y --setopt=tsflags=nodocs wget ca-certificates bind-utils wget bind-utils vim-minimal \
+    && addgroup -g 101 -S nginx \
+    && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
+    # Check signing key
+    && KEY_SHA512="e7fa8303923d9b95db37a77ad46c68fd4755ff935d0a534d26eba83de193c76166c68bfe7f65471bf8881004ef4aa6df3e34689c305662750c0172fca5d8552a *stdin" \
+    && apk add --no-cache --virtual .cert-deps \
+        openssl \
+    && wget -O /tmp/nginx_signing.rsa.pub https://nginx.org/keys/nginx_signing.rsa.pub \
+    && if [ "$(openssl rsa -pubin -in /tmp/nginx_signing.rsa.pub -text -noout | openssl sha512 -r)" = "$KEY_SHA512" ]; then \
+        echo "key verification succeeded!"; \
+        mv /tmp/nginx_signing.rsa.pub /etc/apk/keys/; \
+    else \
+        echo "key verification failed!"; \
+        exit 1; \
+    fi \
+    && apk del .cert-deps \
+    # Bring in gettext so we can get `envsubst`, then throw
+    # the rest away. To do this, we need to install `gettext`
+    # then move `envsubst` out of the way so `gettext` can
+    # be deleted completely, then move `envsubst` back.
+        && apk add --no-cache --virtual .gettext gettext \
+        && mv /usr/bin/envsubst /tmp/ \
+        \
+        && runDeps="$( \
+            scanelf --needed --nobanner /tmp/envsubst \
+                | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+                | sort -u \
+                | xargs -r apk info --installed \
+                | sort -u \
+        )" \
+        && apk add --no-cache $runDeps \
+        && apk del .gettext \
+        && mv /tmp/envsubst /usr/local/bin/ \
+        # Bring in tzdata so users could set the timezones through the environment
+        # variables
+        && apk add --no-cache tzdata \
+        ## Optional: Install Tools
+        # Bring in curl and ca-certificates to make registering on DNS SD easier
+        && apk add --no-cache curl ca-certificates \
     # Prepare repo config and install NGINX Plus https://docs.nginx.com/nginx/admin-guide/installing-nginx/installing-nginx-plus/
-    && wget -q -O /etc/yum.repos.d/nginx-plus-7.repo https://cs.nginx.com/static/files/nginx-plus-7.4.repo \
+    && wget -O /etc/apk/keys/nginx_signing.rsa.pub https://nginx.org/keys/nginx_signing.rsa.pub \
+    && printf "https://plus-pkgs.nginx.com/alpine/v`egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release`/main\n" | tee -a /etc/apk/repositories \
+    && apk update \
     #
-    ## Install the latest release of NGINX App Protect and/or NGINX Plus modules
+    ## Install the latest release of NGINX Plus and/or NGINX Plus modules
     ## Optionally use versioned packages over defaults to specify a release
     # List available versions: 
-    && yum --showduplicates list nginx-plus \
+    && apk search -v --description 'nginx-plus' \ 
     ## Uncomment one:
-    # && yum install -y --setopt=tsflags=nodocs nginx-plus \
-    && yum install -y --setopt=tsflags=nodocs nginx-plus-${NGINX_VERSION}-${PKG_RELEASE} \
+    #&& apk add nginx-plus \
+    && apk add nginx-plus=${NGINX_VERSION}-${PKG_RELEASE} \
     #
     ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
     ## See https://www.nginx.com/products/nginx/modules
@@ -160,16 +202,14 @@ RUN set -x \
     && chown -R nginx /var/lib/nginx/state \
     # Set permissions
     && chown -R nginx:nginx /etc/nginx \
-    # Forward request logs to docker log collector
+    # Forward request and error logs to Docker log collector
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log \
-    # Raise the limits to successfully run benchmarks
-    && ulimit -c -m -s -t unlimited \
-    # Cleanup
-    && yum clean all \
-    && rm -rf /etc/yum.repos.d/* \
-    # Remove the cert/keys from the image
-    && rm /etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.key
+    # Clear apk cache and clean up!
+    && rm -rf /var/cache/apk/* \
+    && rm -f /etc/apk/keys/nginx_signing.rsa.pub \
+    # **Remove the Nginx Plus cert/keys from the image**
+    && rm /etc/apk/cert.pem /etc/apk/cert.key
 
 # Optional: COPY over any of your SSL certs for HTTPS servers
 # e.g.

@@ -2,16 +2,20 @@ FROM centos:centos7.6.1810
 
 LABEL maintainer="armand@f5.com"
 
-# Define NGINX versions for NGINX Plus and NGINX Plus modules
-# Uncomment this block and the versioned nginxPackages in the main RUN
+# Define NGINX and NGINX App Protect versions
+# Uncomment this block and the versioned nginx Packages in the main RUN
 # instruction to install a specific release
-ENV NGINX_VERSION 22      
-# https://nginx.org/en/docs/njs/changes.html
-ENV NJS_VERSION   0.4.3   
-# https://plus-pkgs.nginx.com
+# https://docs.nginx.com/nginx/releases/
+ENV NGINX_VERSION 22
+# https://docs.nginx.com/nginx-app-protect/releases/
+ENV NAP_VERSION   3.158.1
 ENV PKG_RELEASE   1.el7.ngx  
+# Define Threat Campaigns Update
+# Uncomment this block and the versioned nginx Packages in the main RUN
+# instruction to install a specific release 
+ENV NAP_THREAT_CAMPAIGN_DATE    2020.09.16
 
-## Install Nginx Plus
+## Install Nginx App Protect
 # Download certificate and key from the customer portal https://cs.nginx.com
 # and copy to the build context and set correct permissions
 RUN mkdir -p /etc/ssl/nginx
@@ -25,18 +29,27 @@ RUN set -x \
     && usermod -s /sbin/nologin nginx \
     && usermod -L nginx \
     # Install prerequisite packages (ca-certificates epel-release) and tools for editing/troubleshooting:
-    && yum install -y --setopt=tsflags=nodocs wget ca-certificates bind-utils wget bind-utils vim-minimal \
-    # Prepare repo config and install NGINX Plus https://docs.nginx.com/nginx/admin-guide/installing-nginx/installing-nginx-plus/
-    && wget -q -O /etc/yum.repos.d/nginx-plus-7.repo https://cs.nginx.com/static/files/nginx-plus-7.4.repo \
+    && yum install -y --setopt=tsflags=nodocs wget ca-certificates epel-release bind-utils wget bind-utils vim-minimal \
+    # Install NGINX App Protect from repo (https://docs.nginx.com/nginx-app-protect/admin-guide/)
+    && wget -P /etc/yum.repos.d https://cs.nginx.com/static/files/nginx-plus-7.repo \
+    # Installing Threat Campaigns from NGINX Plus App Protect Security Updates repository
+    # (https://docs.nginx.com/nginx-app-protect/admin-guide/)
+    && wget -P /etc/yum.repos.d https://cs.nginx.com/static/files/app-protect-security-updates-7.repo \
     #
     ## Install the latest release of NGINX App Protect and/or NGINX Plus modules
     ## Optionally use versioned packages over defaults to specify a release
     # List available versions: 
-    && yum --showduplicates list nginx-plus \
+    && yum --showduplicates list app-protect \
     ## Uncomment one:
-    # && yum install -y --setopt=tsflags=nodocs nginx-plus \
-    && yum install -y --setopt=tsflags=nodocs nginx-plus-${NGINX_VERSION}-${PKG_RELEASE} \
+    # && yum install -y --setopt=tsflags=nodocs app-protect \
+    && yum install -y --setopt=tsflags=nodocs app-protect-${NGINX_VERSION}+${NAP_VERSION} \
     #
+    ## Install Threat Campaigns Updates
+    # List available versions: 
+    && yum --showduplicates list app-protect-threat-campaigns \
+    ## Uncomment one:
+    # && yum install -y --setopt=tsflags=nodocs app-protect-threat-campaigns \
+    && yum install -y --setopt=tsflags=nodocs app-protect-threat-campaigns-${NAP_THREAT_CAMPAIGN_DATE} \
     ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
     ## See https://www.nginx.com/products/nginx/modules
     ## Some modules include debug binaries, install module ending with "-dbg"
@@ -158,7 +171,7 @@ RUN set -x \
     # Optional: Create State file folder and set permissions
     && mkdir -p /var/lib/nginx/state \
     && chown -R nginx /var/lib/nginx/state \
-    # Set permissions
+    # Set Permissions
     && chown -R nginx:nginx /etc/nginx \
     # Forward request logs to docker log collector
     && ln -sf /dev/stdout /var/log/nginx/access.log \

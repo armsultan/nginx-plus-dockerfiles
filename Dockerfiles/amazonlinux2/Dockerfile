@@ -1,4 +1,4 @@
-FROM centos:centos7.6.1810
+FROM amazonlinux:2
 
 LABEL maintainer="armand@f5.com"
 
@@ -9,7 +9,7 @@ ENV NGINX_VERSION 22
 # https://nginx.org/en/docs/njs/changes.html
 ENV NJS_VERSION   0.4.3   
 # https://plus-pkgs.nginx.com
-ENV PKG_RELEASE   1.el7.ngx  
+ENV PKG_RELEASE   1.amzn2.ngx  
 
 ## Install Nginx Plus
 # Download certificate and key from the customer portal https://cs.nginx.com
@@ -19,15 +19,15 @@ COPY etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.crt
 COPY etc/ssl/nginx/nginx-repo.key /etc/ssl/nginx/nginx-repo.key
 RUN set -x \
     && chmod 644 /etc/ssl/nginx/* \
+    # Install prerequisite packages and vim for editing:
+    && yum install -y --setopt=tsflags=nodocs wget ca-certificates bind-utils wget bind-utils vim-minimal shadow-utils \
     # Create nginx user/group first, to be consistent throughout Docker variants
     && groupadd --system --gid 101 nginx \
     && adduser -g nginx --system --no-create-home --home /nonexistent --shell /bin/false --uid 101 nginx \
     && usermod -s /sbin/nologin nginx \
     && usermod -L nginx \
-    # Install prerequisite packages (ca-certificates epel-release) and tools for editing/troubleshooting:
-    && yum install -y --setopt=tsflags=nodocs wget ca-certificates bind-utils wget bind-utils vim-minimal \
     # Prepare repo config and install NGINX Plus https://docs.nginx.com/nginx/admin-guide/installing-nginx/installing-nginx-plus/
-    && wget -q -O /etc/yum.repos.d/nginx-plus-7.repo https://cs.nginx.com/static/files/nginx-plus-7.4.repo \
+    && wget -P /etc/yum.repos.d https://cs.nginx.com/static/files/nginx-plus-amazon2.repo \
     #
     ## Install the latest release of NGINX App Protect and/or NGINX Plus modules
     ## Optionally use versioned packages over defaults to specify a release
@@ -154,10 +154,8 @@ RUN set -x \
     && rm /etc/nginx/conf.d/default.conf \
     # Optional: Create cache folder and set permissions for proxy caching
     && mkdir -p /var/cache/nginx \
-    && chown -R nginx /var/cache/nginx \
     # Optional: Create State file folder and set permissions
     && mkdir -p /var/lib/nginx/state \
-    && chown -R nginx /var/lib/nginx/state \
     # Set permissions
     && chown -R nginx:nginx /etc/nginx \
     # Forward request logs to docker log collector

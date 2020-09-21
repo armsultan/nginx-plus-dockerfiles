@@ -3,7 +3,7 @@
 A Bunch of Dockerfiles for [NGINX Plus](https://www.nginx.com/products/nginx/).
 **Just add licenses**
 
-# Build and run a Docker container
+# Build and run NGINX Plus Docker container
 
  1. Copy and paste your `nginx-repo.crt` and `nginx-repo.key` into `etc/ssl/nginx` directory
 
@@ -42,6 +42,54 @@ A Bunch of Dockerfiles for [NGINX Plus](https://www.nginx.com/products/nginx/).
     # View and follow container logs
     sudo docker logs -f [CONTAINER ID]
     ```
+
+# Build and run NGINX Plus Docker container with NGINX Controller Agent
+
+The Controller Agent can be deployed in a Docker environment to monitor and / or
+configure NGINX processes inside Docker containers. The agent can collect most
+of the metrics.
+
+The "agent-inside-the-container" is currently the only mode of operation. In
+other words, the agent should be running in the same container as the NGINX
+process being managed / monitored.
+
+1. Copy and paste your `nginx-repo.crt` and `nginx-repo.key` into `etc/ssl/nginx` directory
+
+ 2. Build an image from your Dockerfile:
+    ```bash
+    # Run command from the folder containing the `Dockerfile`
+    $ docker build --build-arg CONTROLLER_URL=https://<fqdn>:8443/1.4 --build-arg API_KEY='abcdefxxxxxx' -t nginx-agent .
+    ```
+ 3. Start the Nginx Plus container, e.g.:
+    ```bash
+    # Start a new container and publish container ports 80, 443 and 8080 to the host
+    $ docker run -d -p 80:80 -p 443:443 -p 8080:8080 nginx-agent
+    ```
+
+    **To mount local volume:**
+
+    ```bash
+    docker run -d -p 80:80 -p 443:443 -p 8080:8080 -v $PWD/etc/nginx:/etc/nginx nginx-agent
+    ```
+
+ 4. To run commands in the docker container you first need to start a bash session inside the nginx container
+    ```bash
+    # get Docker IDs of running containers
+    docker ps
+    # Enter a Linux Bash shell
+    sudo docker exec -i -t [CONTAINER ID] /bin/bash
+    ```
+
+ 5. To open logs
+    ```bash
+    # get Docker IDs of running containers
+    docker ps
+    # View and follow container logs
+    sudo docker logs -f [CONTAINER ID]
+    ```
+
+**For more information, please refer to our [Controller Dockerfile repository](https://github.com/nginxinc/docker-nginx-controller).**
+
 
 ## Gitlab CICD builds
 

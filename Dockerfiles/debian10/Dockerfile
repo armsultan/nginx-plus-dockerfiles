@@ -1,7 +1,17 @@
 #For Debian 10
 FROM debian:buster-slim
 
-LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
+LABEL maintainer="armand@f5.com"
+
+# Define NGINX versions for NGINX Plus and NGINX Plus modules
+# Uncomment this block and the versioned nginxPackages block in the main RUN
+# instruction to install a specific release
+# https://docs.nginx.com/nginx/releases/
+ENV NGINX_VERSION 22        
+# https://nginx.org/en/docs/njs/changes.html
+ENV NJS_VERSION   0.4.3     
+# https://plus-pkgs.nginx.com
+ENV PKG_RELEASE   1~buster  
 
 ## Install Nginx Plus
 # Download certificate and key from the customer portal https://cs.nginx.com
@@ -9,22 +19,25 @@ LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 RUN mkdir -p /etc/ssl/nginx
 COPY etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.crt
 COPY etc/ssl/nginx/nginx-repo.key /etc/ssl/nginx/nginx-repo.key
-RUN chmod 644 /etc/ssl/nginx/* \
-# Install prerequisite packages, vim for editing, then Install NGINX Plus
-  && set -x \
+RUN set -x \
+  && chmod 644 /etc/ssl/nginx/* \
+  # Create nginx user/group first, to be consistent throughout Docker variants
+  && addgroup --system --gid 101 nginx \
+  && adduser --system --disabled-login --ingroup nginx --no-create-home --home /nonexistent --gecos "nginx user" --shell /bin/false --uid 101 nginx \
+  # Install prerequisite packages, vim for editing, then Install NGINX Plus
   && apt-get update && apt-get upgrade -y \
-  && apt-get install --no-install-recommends --no-install-suggests -y apt-transport-https ca-certificates gnupg1 curl python2.7 procps vim-tiny joe jq less apt-utils \
+  && apt-get install --no-install-recommends --no-install-suggests -y apt-transport-https ca-certificates gnupg1 curl procps vim-tiny less apt-utils \
   && \
   NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62; \
   found=''; \
   for server in \
-    ha.pool.sks-keyservers.net \
-    hkp://keyserver.ubuntu.com:80 \
-    hkp://p80.pool.sks-keyservers.net:80 \
-    pgp.mit.edu \
+  ha.pool.sks-keyservers.net \
+  hkp://keyserver.ubuntu.com:80 \
+  hkp://p80.pool.sks-keyservers.net:80 \
+  pgp.mit.edu \
   ; do \
-    echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
-    apt-key adv --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
+  echo "Fetching GPG key $NGINX_GPGKEY from $server"; \
+  apt-key adv --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$NGINX_GPGKEY" && found=yes && break; \
   done; \
   test -z "$found" && echo >&2 "error: failed to fetch GPG key $NGINX_GPGKEY" && exit 1; \
   echo "Acquire::https::plus-pkgs.nginx.com::Verify-Peer \"true\";" >> /etc/apt/apt.conf.d/90nginx \
@@ -32,51 +45,129 @@ RUN chmod 644 /etc/ssl/nginx/* \
   && echo "Acquire::https::plus-pkgs.nginx.com::SslCert     \"/etc/ssl/nginx/nginx-repo.crt\";" >> /etc/apt/apt.conf.d/90nginx \
   && echo "Acquire::https::plus-pkgs.nginx.com::SslKey      \"/etc/ssl/nginx/nginx-repo.key\";" >> /etc/apt/apt.conf.d/90nginx \
   && printf "deb https://plus-pkgs.nginx.com/debian buster nginx-plus\n" > /etc/apt/sources.list.d/nginx-plus.list \
-  && apt-get update && apt-get install -y nginx-plus \
+  && apt-get update \
+  #
+  ## Install the latest release of NGINX Plus and/or NGINX Plus modules
+  ## Optionally use versioned packages over defaults to specify a release
+  # List available versions: 
+  && apt-cache policy nginx-plus \
+  ## Uncomment one:
+  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus \
+  && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus=${NGINX_VERSION}-${PKG_RELEASE} \
+  #
   ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
   ## See https://www.nginx.com/products/nginx/modules
-  ## For debug binaries, install module ending with "-dbg"
-  ## brotli compression dynamic modules
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-brotli \
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-brotli-dbg \
-  ## cookie flag dynamic module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-cookie-flag \
-  ## encrypted session dynamic module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-encrypted-session \
-  ## GeoIP dynamic modules
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-geoip \
-  ## GeoIP2 dynamic modules
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-geoip2 \
-  ## headers-more dynamic module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-headers-more \
-  ## image filter dynamic module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-image-filter \
-  ## Lua dynamic module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-lua \
-  ## ModSecurity dynamic module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-modsecurity \
-  ## NDK dynamic module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-ndk \
+  ## Some modules include debug binaries, install module ending with "-dbg"
+  ## Uncomment one:
   ## njs dynamic modules
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-njs \
+  #nginx-plus-module-njs \
+  #nginx-plus-module-dbg \
+  #nginx-plus-module-njs=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-njs-dbg=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE} \
+  ## NGINX high Availablity keepalived
+  #nginx-ha-keepalived \
+  ## NGINX agent for New Relic \
+  #nginx-nr-agent \
+  ## SPNEGO for Kerberos authentication
+  #nginx-plus-module-auth-spnego
+  #nginx-plus-module-auth-spnego-dbg
+  #nginx-plus-module-auth-spnego=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE}
+  #nginx-plus-module-auth-spnego-dbg=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE}
+  ## brotli compression dynamic modules
+  #nginx-plus-module-brotli \
+  #nginx-plus-module-brotli-dbg \
+  #nginx-plus-module-brotli=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-brotli-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
+  ## cookie flag dynamic module
+  #nginx-plus-module-cookie-flag \
+  #nginx-plus-module-cookie-flag-dbg
+  #nginx-plus-module-cookie-flag=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-cookie-flag-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
+  ## Encrypted-Session dynamic module
+  #nginx-plus-module-encrypted-session \
+  #nginx-plus-module-encrypted-session=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-encrypted-session-dbg \
+  #nginx-plus-module-encrypted-session-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
+  ## FIPS Check 
+  #nginx-plus-module-fips-check \
+  #nginx-plus-module-fips-check-dbg \
+  #nginx-plus-module-fips-check=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-fips-check-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
+  ## GeoIP dynamic modules
+  #nginx-plus-module-geoip \
+  #nginx-plus-module-geoip-dbg \
+  #nginx-plus-module-geoip=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-geoip-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
+  ## GeoIP2 dynamic modules
+  #nginx-plus-module-geoip2 \
+  #nginx-plus-module-geoip2-dbg \
+  #nginx-plus-module-geoip2=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-geoip2-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
+  ## headers-more dynamic module
+  #nginx-plus-module-headers-more \
+  #nginx-plus-module-headers-more-dbg \
+  #nginx-plus-module-headers-more=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-headers-more-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
+  ## image filter dynamic module
+  #nginx-plus-module-image-filter \
+  #nginx-plus-module-image-filter-dbg \
+  #nginx-plus-module-image-filter=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-image-filter-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
+  ## Lua dynamic module
+  #nginx-plus-module-lua \
+  #nginx-plus-module-lua-dbg \
+  #nginx-plus-module-lua=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-lua-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
+  ## ModSecurity dynamic module
+  #nginx-plus-module-modsecurity \
+  #nginx-plus-module-modsecurity-dbg \
+  #nginx-plus-module-modsecurity=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-modsecurity-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
+  ## Nginx Development Kit dynamic module
+  #nginx-plus-module-ndk \
+  #nginx-plus-module-ndk-dbg \
+  #nginx-plus-module-ndk=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-ndk-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
   ## OpenTracing dynamic module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-opentracing \
-  ## Passenger dynamic module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-passenger \
+  #nginx-plus-module-opentracing \
+  #nginx-plus-module-opentracing-dbg \
+  #nginx-plus-module-opentracing=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-opentracing-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
+  ## Phusion Passenger Open Source dynamic module
+  #nginx-plus-module-passenger \
+  #nginx-plus-module-passenger-dbg \
+  #nginx-plus-module-passenger=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-passenger-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
   ## Perl dynamic module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-perl \
+  #nginx-plus-module-perl \
+  #nginx-plus-module-perl-dbg \
+  #nginx-plus-module-perl=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-perl-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
   ## Prometheus exporter NJS module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-prometheus \
+  #nginx-plus-module-prometheus \
+  #nginx-plus-module-prometheus=${NGINX_VERSION}-${PKG_RELEASE} \
   ## RTMP dynamic module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-rtmp \
+  #nginx-plus-module-rtmp \
+  #nginx-plus-module-rtmp-dbg \
+  #nginx-plus-module-rtmp=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-rtmp-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
   ## set-misc dynamic module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-set-misc \
-  ## substitution dynamic module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-subs-filter \
+  #nginx-plus-module-set-misc \
+  #nginx-plus-module-set-misc-dbg \
+  #nginx-plus-module-set-misc=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-set-misc-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
+  ## HTTP Substitutions Filter dynamic module
+  #nginx-plus-module-subs-filter \
+  #nginx-plus-module-subs-filter-dbg \
+  #nginx-plus-module-subs-filter=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-subs-filter-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
   ## xslt dynamic module
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus-module-xslt \
-  # Cleanup
-  && rm -rf /var/lib/apt/lists/* \
+  #nginx-plus-module-xslt \
+  #nginx-plus-module-xslt-dbg \
+  #nginx-plus-module-xslt=${NGINX_VERSION}-${PKG_RELEASE} \
+  #nginx-plus-module-xslt-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
+  ## NGINX Sync Script nginx-sync.sh 
+  #nginx-sync \
   # Remove default nginx config
   && rm /etc/nginx/conf.d/default.conf \
   # Optional: Create cache folder and set permissions for proxy caching
@@ -84,7 +175,20 @@ RUN chmod 644 /etc/ssl/nginx/* \
   && chown -R nginx /var/cache/nginx \
   # Optional: Create State file folder and set permissions
   && mkdir -p /var/lib/nginx/state \
-  && chown -R nginx /var/lib/nginx/state
+  && chown -R nginx /var/lib/nginx/state \
+  # Set permissions
+  && chown -R nginx:nginx /etc/nginx \
+  # Forward request logs to docker log collector
+  && ln -sf /dev/stdout /var/log/nginx/access.log \
+  && ln -sf /dev/stderr /var/log/nginx/error.log \
+  # Raise the limits to successfully run benchmarks
+  && ulimit -c -m -s -t unlimited \
+  # Cleanup
+  && apt-get remove --purge --auto-remove -y gnupg1 \  
+  && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/nginx-plus.list \
+  && rm -rf /etc/apt/apt.conf.d/90nginx \
+  # Remove the cert/keys from the image
+  && rm /etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.key
 
 # Optional: COPY over any of your SSL certs for HTTPS servers
 # e.g.
@@ -93,14 +197,6 @@ RUN chmod 644 /etc/ssl/nginx/* \
 
 # COPY /etc/nginx (Nginx configuration) directory
 COPY etc/nginx /etc/nginx
-RUN chown -R nginx:nginx /etc/nginx \
- # Forward request logs to docker log collector
- && ln -sf /dev/stdout /var/log/nginx/access.log \
- && ln -sf /dev/stderr /var/log/nginx/error.log \
- # Raise the limits to successfully run benchmarks
- && ulimit -c -m -s -t unlimited \
- # Remove the cert/keys from the image
- && rm /etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.key
 
 # EXPOSE ports, HTTP 80, HTTPS 443 and, Nginx status page 8080
 EXPOSE 80 443 8080
