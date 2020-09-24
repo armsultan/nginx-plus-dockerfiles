@@ -107,8 +107,8 @@ RUN set -x \
     ## njs dynamic modules
     #nginx-plus-module-njs \
     #nginx-plus-module-dbg \
-    #nginx-plus-module-njs=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE} \
-    #nginx-plus-module-njs-dbg=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE} \
+    #nginx-plus-module-njs=${NGINX_VERSION}.${NJS_VERSION}-${-${PKG_RELEASE} \
+    #nginx-plus-module-njs-dbg=${NGINX_VERSION}.${NJS_VERSION}-${-${PKG_RELEASE} \
     ## NGINX high Availablity keepalived
     #nginx-ha-keepalived \
     ## NGINX agent for New Relic \
@@ -116,8 +116,8 @@ RUN set -x \
     ## SPNEGO for Kerberos authentication
     #nginx-plus-module-auth-spnego
     #nginx-plus-module-auth-spnego-dbg
-    #nginx-plus-module-auth-spnego=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE}
-    #nginx-plus-module-auth-spnego-dbg=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE}
+    #nginx-plus-module-auth-spnego=${NGINX_VERSION}-${PKG_RELEASE} \
+    #nginx-plus-module-auth-spnego-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
     ## brotli compression dynamic modules
     #nginx-plus-module-brotli \
     #nginx-plus-module-brotli-dbg \

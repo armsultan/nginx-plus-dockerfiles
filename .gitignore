@@ -13,3 +13,8 @@ Thumbs.db
 nginx-repo.key
 nginx-repo.crt
 .log
+
+# Project Specific files #
+##########################
+NAP/Dockerfile
+NGINX-PLUS/Dockerfile

@@ -9,15 +9,6 @@ ENV NGINX_VERSION 22
 # https://nginx.org/en/docs/njs/changes.html
 ENV NJS_VERSION   0.4.3   
 # https://plus-pkgs.nginx.com
-ENV PKG_RELEASE   r1
-
-# Define NGINX versions for NGINX Plus and NGINX Plus modules
-# Uncomment this block and the versioned nginxPackages in the main RUN
-# instruction to install a specific release
-ENV NGINX_VERSION 22      
-# https://nginx.org/en/docs/njs/changes.html
-ENV NJS_VERSION   0.4.3   
-# https://plus-pkgs.nginx.com
 ENV PKG_RELEASE   r1 
 
 ## Install Nginx Plus
@@ -86,8 +77,8 @@ RUN set -x \
     ## njs dynamic modules
     #nginx-plus-module-njs \
     #nginx-plus-module-dbg \
-    #nginx-plus-module-njs=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE} \
-    #nginx-plus-module-njs-dbg=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE} \
+    #nginx-plus-module-njs=${NGINX_VERSION}.${NJS_VERSION}-${-${PKG_RELEASE} \
+    #nginx-plus-module-njs-dbg=${NGINX_VERSION}.${NJS_VERSION}-${-${PKG_RELEASE} \
     ## NGINX high Availablity keepalived
     #nginx-ha-keepalived \
     ## NGINX agent for New Relic \
@@ -95,8 +86,8 @@ RUN set -x \
     ## SPNEGO for Kerberos authentication
     #nginx-plus-module-auth-spnego
     #nginx-plus-module-auth-spnego-dbg
-    #nginx-plus-module-auth-spnego=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE}
-    #nginx-plus-module-auth-spnego-dbg=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE}
+    #nginx-plus-module-auth-spnego=${NGINX_VERSION}-${PKG_RELEASE} \
+    #nginx-plus-module-auth-spnego-dbg=${NGINX_VERSION}-${PKG_RELEASE} \
     ## brotli compression dynamic modules
     #nginx-plus-module-brotli \
     #nginx-plus-module-brotli-dbg \
