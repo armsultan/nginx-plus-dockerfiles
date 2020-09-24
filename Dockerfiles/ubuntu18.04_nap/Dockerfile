@@ -192,9 +192,11 @@ RUN set -x \
     && chown -R nginx /var/lib/nginx/state \
     # Set permissions
     &&  chown -R nginx:nginx /etc/nginx \
-    # Forward request logs to docker log collector
+    # Forward request and error logs to docker log collector
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log \
+    # Forward App Protect security logs
+    && ln -sf /dev/stdout /var/log/app_protect/security.log \
     # Raise the limits to successfully run benchmarks
     && ulimit -c -m -s -t unlimited \
     # Cleanup

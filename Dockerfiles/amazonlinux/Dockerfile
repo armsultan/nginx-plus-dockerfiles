@@ -159,7 +159,7 @@ RUN set -x \
     && mkdir -p /var/lib/nginx/state \
     # Set permissions
     && chown -R nginx:nginx /etc/nginx \
-    # Forward request logs to docker log collector
+    # Forward request and error logs to docker log collector
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log \
     # Raise the limits to successfully run benchmarks

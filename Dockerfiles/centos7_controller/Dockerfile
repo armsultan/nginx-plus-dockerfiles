@@ -63,7 +63,7 @@ RUN chmod 644 /etc/ssl/nginx/* \
     && curl -k -sS -L ${CONTROLLER_URL}/install/controller/ > install.sh \
     && sed -i 's/^assume_yes=""/assume_yes="-y"/' install.sh \
     && sh ./install.sh -y
-    # Forward request logs to docker log collector
+    # Forward request and error logs to docker log collector
     && ln -sf /dev/stdout /var/log/nginx-controller/agent.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log \
     # Raise the limits to successfully run benchmarks

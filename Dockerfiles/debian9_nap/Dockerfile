@@ -22,7 +22,6 @@ ENV NAP_THREAT_CAMPAIGN_DATE    2020.09.16
 # instruction to install a specific release 
 ENV NAP_ATTACK_SIGNATURE_DATE    2020.09.17
 
-
 ## Install Nginx App Protect
 # Download certificate and key from the customer portal https://cs.nginx.com
 # and copy to the build context and set correct permissions
@@ -198,9 +197,11 @@ RUN set -x \
   && chown -R nginx /var/lib/nginx/state \
   # Set permissions
   && chown -R nginx:nginx /etc/nginx \
-  # Forward request logs to docker log collector
+  # Forward request and error logs to docker log collector
   && ln -sf /dev/stdout /var/log/nginx/access.log \
   && ln -sf /dev/stderr /var/log/nginx/error.log \
+  # Forward App Protect security logs
+  && ln -sf /dev/stdout /var/log/app_protect/security.log \
   # Raise the limits to successfully run benchmarks
   && ulimit -c -m -s -t unlimited \
   # Cleanup
