@@ -38,14 +38,14 @@ RUN set -x \
   && apt-cache policy nginx-plus \
   ## Uncomment one:
   && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus \
-  # && DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus=${NGINX_VERSION}-${PKG_RELEASE} \
+  #&& DEBIAN_FRONTEND=noninteractive apt-get -qq -y install --no-install-recommends nginx-plus=${NGINX_VERSION}-${PKG_RELEASE} \
   #
   ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
   ## See https://www.nginx.com/products/nginx/modules
   ## Some modules include debug binaries, install module ending with "-dbg"
   ## Uncomment one:
   ## njs dynamic modules
-  #nginx-plus-module-njs \
+  nginx-plus-module-njs \
   #nginx-plus-module-dbg \
   #nginx-plus-module-njs=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE} \
   #nginx-plus-module-njs-dbg=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE} \
