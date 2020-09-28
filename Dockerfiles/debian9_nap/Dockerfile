@@ -43,13 +43,12 @@ RUN set -x \
   && wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90nginx \
   # Installing NGINX Plus App Protect Attack Signatures repository
   # (https://docs.nginx.com/nginx-app-protect/admin-guide/)
-  && printf "deb https://app-protect-sigs.nginx.com/debian `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/app-protect-sigs.list \
+  && printf "deb https://app-protect-security-updates.nginx.com/debian/ `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/app-protect-security-updates.list \
   && wget https://cs.nginx.com/static/keys/app-protect-security-updates.key && apt-key add app-protect-security-updates.key \
-  && wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90app-protect-sigs \ 
   # Installing NGINX Plus App Protect Threat Campaigns Security Updates repository
   # (https://docs.nginx.com/nginx-app-protect/admin-guide/)
-  && wget https://cs.nginx.com/static/keys/app-protect-security-updates.key && apt-key add app-protect-security-updates.key \
   && wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90app-protect-security-updates \
+  #
   && apt-get update \
   #
   ## Install the latest release of NGINX App Protect and/or NGINX Plus modules
@@ -210,7 +209,6 @@ RUN set -x \
   && rm -rf /etc/apt/sources.list.d/app-protect-security-updates.list \
   && rm -rf /etc/apt/apt.conf.d/90nginx \
   && rm -rf /etc/apt/apt.conf.d/90app-protect-security-updates \
-  && rm -rf /etc/apt/apt.conf.d/90app-protect-sigs \
   && rm -rf nginx_signing.key \
   && rm -rf app-protect.key \
   && rm -rf app-protect-security-updates.key \
@@ -222,10 +220,12 @@ RUN set -x \
 #COPY etc/ssl/www.example.com.crt /etc/ssl/www.example.com.crt
 #COPY etc/ssl/www.example.com.key /etc/ssl/www.example.com.key
 
-# COPY /etc/nginx (Nginx configuration) directory
+# Copy nginx directory (Nginx and app protect configuration) 
 COPY etc/nginx /etc/nginx
+# Use an entrypoint App-Protect needs to start up in a particular order
+COPY entrypoint.sh  ./
 
 # EXPOSE ports, HTTP 80, HTTPS 443 and, Nginx status page 8080
 EXPOSE 80 443 8080
 STOPSIGNAL SIGTERM
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["sh", "/entrypoint.sh"]

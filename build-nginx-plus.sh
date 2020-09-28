@@ -6,6 +6,9 @@ distro="$(tr [A-Z] [a-z] <<< "$1")" # set to lowercase
 is_controller='_controller'
 is_nap='_nap'
 
+# Set build directory
+build_dir=''
+
 # Optional: Pull Git changes
 # git pull --no-edit
 
@@ -73,3 +76,6 @@ else
     printf "\n"
     docker images | grep nginx-plus
 fi
+
+# remove Dockerfile from the build directory (if exists)
+rm $build_dir/Dockerfile || true

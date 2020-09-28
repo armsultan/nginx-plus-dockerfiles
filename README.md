@@ -30,6 +30,43 @@ Run `./build-nginx-plus.sh [build_name]`, where `[build_name]` one of:
 |`ubuntu18.04_nap`          | Ubuntu 18.04 with NGINX App Protect                |
 |`ubuntu20.04`              | Ubuntu 20.04 with NGINX Plus                       |
 
+## Build NGINX Plus Docker container using script
+
+ 1. Copy and paste your `nginx-repo.crt` and `nginx-repo.key` into `etc/ssl/nginx` 
+    directory, inside the `NAP` folder for [NGINX App Protect](https://www.nginx.com/products/nginx-app-protect/) or
+    in the `NGINX-Plus` folder for [NGINX Plus](https://www.nginx.com/products/nginx/)
+
+ 2. Build an image from your Dockerfile:
+    ```bash
+    # ./build-nginx-plus.sh [Build-name]
+    $ ./build-nginx-plus.sh ubuntu18.04_nap
+    ```
+
+ 3. See the Docker images available
+    ```bash
+    # NGINX PLUS images are named nginx-plus-[build]
+    $ docker images | grep nginx-plus
+    # App Protect images are named nginx-app-protect-[build]
+    $ docker images | grep nginx-app-protect
+    # NGINX PLUS with Controller Agent images are named nginx-app-protect-[build]
+    $ docker images | grep nginx-agent
+    ```
+
+ 4. Start the container, e.g.:
+    ```bash
+    # Start a new container and publish container ports 80, 443 and 8080 to the host
+    # Where [docker_image_name] is found on the last step
+    $ docker run -d -p 80:80 -p 443:443 -p 8080:8080 [docker_image_name]
+    ```
+
+    **To mount local volume:**
+
+    ```bash
+    docker run -d \
+      -p 80:80 -p 443:443 \
+      -p 8080:8080 \
+      -v $PWD/etc/nginx:/etc/nginx [docker_image_name]
+    ```
 
 ## Build NGINX Plus Docker container Manually
 
@@ -52,10 +89,16 @@ Run `./build-nginx-plus.sh [build_name]`, where `[build_name]` one of:
     **To mount local volume:**
 
     ```bash
-    docker run -d -p 80:80 -p 443:443 -p 8080:8080 -v $PWD/etc/nginx:/etc/nginx nginx-plus
+   docker run -d \
+      -p 80:80 -p 443:443 \
+      -p 8080:8080 \
+      -v $PWD/etc/nginx:/etc/nginx nginx-plus
     ```
 
- 4. To run commands in the docker container you first need to start a bash session inside the nginx container
+## Useful Docker commands
+
+
+ 1. To run commands in the docker container you first need to start a bash session inside the nginx container
     ```bash
     # get Docker IDs of running containers
     docker ps
@@ -66,7 +109,7 @@ Run `./build-nginx-plus.sh [build_name]`, where `[build_name]` one of:
     sudo docker exec -i -t [CONTAINER ID] /bin/bash
     ```
 
- 5. To open logs
+ 2. To open logs
     ```bash
     # get Docker IDs of running containers
     docker ps
@@ -95,28 +138,6 @@ process being managed / monitored.
     ```bash
     # Start a new container and publish container ports 80, 443 and 8080 to the host
     $ docker run -d -p 80:80 -p 443:443 -p 8080:8080 nginx-agent
-    ```
-
-    **To mount local volume:**
-
-    ```bash
-    docker run -d -p 80:80 -p 443:443 -p 8080:8080 -v $PWD/etc/nginx:/etc/nginx nginx-agent
-    ```
-
- 4. To run commands in the docker container you first need to start a bash session inside the nginx container
-    ```bash
-    # get Docker IDs of running containers
-    docker ps
-    # Enter a Linux Bash shell
-    sudo docker exec -i -t [CONTAINER ID] /bin/bash
-    ```
-
- 5. To open logs
-    ```bash
-    # get Docker IDs of running containers
-    docker ps
-    # View and follow container logs
-    sudo docker logs -f [CONTAINER ID]
     ```
 
 **For more information, please refer to our [Controller Dockerfile repository](https://github.com/nginxinc/docker-nginx-controller).**

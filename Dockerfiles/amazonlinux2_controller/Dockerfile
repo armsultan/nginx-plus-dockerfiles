@@ -67,6 +67,7 @@ RUN chmod 644 /etc/ssl/nginx/* \
     && ulimit -c -m -s -t unlimited \
     # Cleanup
     && yum clean all \
+    && rm -rf /var/cache/yum \
     && rm -rf /etc/yum.repos.d/* \
     # Remove the cert/keys from the image
     && rm /etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.key

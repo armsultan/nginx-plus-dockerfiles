@@ -18,3 +18,4 @@ nginx-repo.crt
 ##########################
 NAP/Dockerfile
 NGINX-PLUS/Dockerfile
+CONTROLLER_AGENT/Dockerfile

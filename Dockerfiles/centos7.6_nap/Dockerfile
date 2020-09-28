@@ -197,6 +197,7 @@ RUN set -x \
     && ulimit -c -m -s -t unlimited \
     # Cleanup
     && yum clean all \
+    && rm -rf /var/cache/yum \
     && rm -rf /etc/yum.repos.d/* \
     # Remove the cert/keys from the image
     && rm /etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.key
@@ -206,10 +207,12 @@ RUN set -x \
 #COPY etc/ssl/www.example.com.crt /etc/ssl/www.example.com.crt
 #COPY etc/ssl/www.example.com.key /etc/ssl/www.example.com.key
 
-# COPY /etc/nginx (Nginx configuration) directory
+# Copy nginx directory (Nginx and app protect configuration) 
 COPY etc/nginx /etc/nginx
+# Use an entrypoint App-Protect needs to start up in a particular order
+COPY entrypoint.sh  ./
 
 # EXPOSE ports, HTTP 80, HTTPS 443 and, Nginx status page 8080
 EXPOSE 80 443 8080
 STOPSIGNAL SIGTERM
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["sh", "/entrypoint.sh"]
