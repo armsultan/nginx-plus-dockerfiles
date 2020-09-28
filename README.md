@@ -86,14 +86,14 @@ Run `./build-nginx-plus.sh [build_name]`, where `[build_name]` one of:
     $ docker run -d -p 80:80 -p 443:443 -p 8080:8080 nginx-plus
     ```
 
-    **To mount local volume:**
+**To mount local volume:**
 
-    ```bash
+   ```bash
    docker run -d \
       -p 80:80 -p 443:443 \
       -p 8080:8080 \
       -v $PWD/etc/nginx:/etc/nginx nginx-plus
-    ```
+   ```
 
 ## Useful Docker commands
 
