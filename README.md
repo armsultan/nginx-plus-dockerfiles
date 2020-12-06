@@ -21,6 +21,8 @@ Run `./build-nginx-plus.sh [build_name]`, where `[build_name]` one of:
 |`centos7.6_nap`            | Centos 7.6 with NGINX App Protect                  |
 |~~`centos7.6_controller`~~     | ~~Centos 7.6 with NGINX Plus and Controller agent~~    |
 |`centos8`                  | Centos 8 with NGINX Plus                           |
+|`rhel7`                  | Red Hat (Universal Base) 7 with NGINX Plus                           |
+|`rhel8`                  | Red Hat (Universal Base) 8 with NGINX Plus                           |
 |`debian9`                  | Debian 9 with NGINX Plus                           |
 |~~`debian9_controller`~~       | ~~Debian 9 with NGINX Plus and Controller agent~~      |
 |`debian10`                 | Debian 10 with NGINX Plus                          |
