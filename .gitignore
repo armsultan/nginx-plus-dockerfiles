@@ -12,6 +12,7 @@ Thumbs.db
 ########################
 nginx-repo.key
 nginx-repo.crt
+*.pk12
 .log
 
 # Project Specific files #

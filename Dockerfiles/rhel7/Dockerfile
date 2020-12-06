@@ -1,5 +1,4 @@
-FROM centos:centos7.6.1810
-
+FROM registry.access.redhat.com/ubi7/ubi:latest
 LABEL maintainer="armand@f5.com"
 
 # Define NGINX versions for NGINX Plus and NGINX Plus modules
@@ -20,6 +19,7 @@ COPY etc/ssl/nginx/nginx-repo.key /etc/ssl/nginx/nginx-repo.key
 RUN set -x \
     && chmod 644 /etc/ssl/nginx/* \
     # Create nginx user/group first, to be consistent throughout Docker variants
+    && yum install -y --disableplugin=subscription-manager --setopt=tsflags=nodocs shadow-utils.x86_64 \
     && groupadd --system --gid 101 nginx \
     && adduser -g nginx --system --no-create-home --home /nonexistent --shell /bin/false --uid 101 nginx \
     && usermod -s /sbin/nologin nginx \
@@ -27,15 +27,16 @@ RUN set -x \
     # Install prerequisite packages (ca-certificates epel-release) and tools for editing/troubleshooting:
     && yum install -y --setopt=tsflags=nodocs wget ca-certificates bind-utils wget bind-utils vim-minimal \
     # Prepare repo config and install NGINX Plus https://docs.nginx.com/nginx/admin-guide/installing-nginx/installing-nginx-plus/
-    && wget -q -O /etc/yum.repos.d/nginx-plus-7.repo https://cs.nginx.com/static/files/nginx-plus-7.4.repo \
+    && wget -P /etc/yum.repos.d https://cs.nginx.com/static/files/nginx-plus-7.4.repo \
     #
     ## Install the latest release of NGINX App Protect and/or NGINX Plus modules
     ## Optionally use versioned packages over defaults to specify a release
     # List available versions: 
     && yum --showduplicates list nginx-plus \
+        && yum --showduplicates list nginx-plus-module-njs \
     ## Uncomment one:
-    # && yum install -y --setopt=tsflags=nodocs nginx-plus \
-    && yum install -y --setopt=tsflags=nodocs nginx-plus-${NGINX_VERSION}-${PKG_RELEASE} \
+    # && yum install -y --disableplugin=subscription-manager --setopt=tsflags=nodocs nginx-plus \
+    && yum install -y --disableplugin=subscription-manager --setopt=tsflags=nodocs nginx-plus-${NGINX_VERSION}-${PKG_RELEASE} \
     #
     ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
     ## See https://www.nginx.com/products/nginx/modules
@@ -44,7 +45,7 @@ RUN set -x \
     ## njs dynamic modules
     #nginx-plus-module-njs \
     #nginx-plus-module-dbg \
-    #nginx-plus-module-njs=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE} \
+    # nginx-plus-module-njs=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE} \
     #nginx-plus-module-njs-dbg=${NGINX_VERSION}+${NJS_VERSION}-${PKG_RELEASE} \
     ## NGINX high Availablity keepalived
     #nginx-ha-keepalived \

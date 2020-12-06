@@ -40,7 +40,7 @@ RUN set -x \
     ## Optional: Install NGINX Plus Dynamic Modules (3rd-party) from repo
     ## See https://www.nginx.com/products/nginx/modules
     ## Some modules include debug binaries, install module ending with "-dbg"
-    ## Uncomment one:
+    ## Uncomment one (run "yum --showduplicates list nginx-plus-module-njs" to see all versions):
     ## njs dynamic modules
     #nginx-plus-module-njs \
     #nginx-plus-module-dbg \
