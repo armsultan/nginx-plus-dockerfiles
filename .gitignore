@@ -15,6 +15,7 @@ nginx-repo.crt
 *.pk12
 .log
 .lic
+nginx-manager.lic
 
 # Project Specific files #
 ##########################
