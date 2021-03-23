@@ -29,6 +29,7 @@ Run `./build-nginx-plus.sh [build_name]`, where `[build_name]` one of:
 |`debian9`                  | Debian 9 with NGINX Plus                           |
 |~~`debian9_controller`~~   | ~~Debian 9 with NGINX Plus and Controller agent~~      |
 |`debian10`                 | Debian 10 with NGINX Plus                          |
+|`debian10_nim`                 | Debian 10 with NGINX Instance Manager with NGINX plus                          |
 |`ubuntu18.04`              | Ubuntu 18.04 with NGINX Plus                       |
 |~~`ubuntu18.04_controller`~~   | ~~Ubuntu 18.04 with NGINX Plus and Controller agent~~  |
 |`ubuntu18.04_crossplane`    | Ubuntu 18.04 with NGINX Plus and Crossplane        |
