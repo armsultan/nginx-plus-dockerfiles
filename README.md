@@ -3,7 +3,7 @@
 A Bunch of Dockerfiles for [NGINX Plus, NGINX App Protect and NGINX Instance Manager](https://www.nginx.com/products/nginx/).
 
 * Try NGINX Plus and NGINX App Protect: **Just add [licenses](https://www.nginx.com/free-trial-request/)**
-* Try NGINX Instance Manager: : **Just add [licenses](https://www.nginx.com/products/nginx/nginx-instance-manager/)**
+* Try NGINX Instance Manager: **Just add [licenses](https://www.nginx.com/products/nginx/nginx-instance-manager/)**
 ## Build and run NGINX Plus Docker containers (Using Script)
 
 Run `./build-nginx-plus.sh [build_name]`, where `[build_name]` one of:
