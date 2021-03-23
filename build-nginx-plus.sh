@@ -5,6 +5,7 @@ distro="$(tr [A-Z] [a-z] <<< "$1")" # set to lowercase
 # Check Dockerfile type
 is_controller='_controller'
 is_nap='_nap'
+is_nim='_nim'
 
 # Set build directory
 build_dir=''
@@ -54,6 +55,27 @@ elif grep -q "$is_nap" <<< "$distro"; then
     printf "Nginx App Protect containers built:"
     printf "\n"
     docker images | grep nginx-app-protect
+#
+# Build NGINX Instance Manager ("NIM") Docker container
+#
+elif grep -q "$is_nim" <<< "$distro"; then
+    # Set build directory
+    build_dir='./NIM'
+    
+    # remove Dockerfile here (if exists)
+    rm $build_dir/Dockerfile || true
+
+    # copy desired Dockerfile
+    cp Dockerfiles/$distro/Dockerfile $build_dir
+    
+    # Build and tag it as "nginx-nim-protect-[distro]"
+    docker build -t nginx-nim-$distro $build_dir --pull --no-cache # No caching
+
+    # Show all docker containers build with names containing "nginx-plus-"
+    printf "\n"
+    printf "Nginx Instance Manager (NIM) containers built:"
+    printf "\n"
+    docker images | grep nginx-nim
 #
 # Build NGINX Plus Docker container
 #

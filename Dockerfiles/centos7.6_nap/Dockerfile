@@ -6,7 +6,7 @@ LABEL maintainer="armand@f5.com"
 # Uncomment this block and the versioned nginx Packages in the main RUN
 # instruction to install a specific release
 # https://docs.nginx.com/nginx/releases/
-ENV NGINX_VERSION 22
+ENV NGINX_VERSION 23
 # https://docs.nginx.com/nginx-app-protect/releases/
 ENV NAP_VERSION   3.158.1
 ENV PKG_RELEASE   1.el7.ngx  
@@ -22,7 +22,7 @@ ENV NAP_THREAT_CAMPAIGN_DATE    2020.09.16
 ENV NAP_ATTACK_SIGNATURE_DATE    2020.09.17
 
 ## Install Nginx App Protect
-# Download certificate and key from the customer portal https://cs.nginx.com
+# Download certificate and key from the customer portal https://account.f5.com/myf5
 # and copy to the build context and set correct permissions
 RUN mkdir -p /etc/ssl/nginx
 COPY etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.crt

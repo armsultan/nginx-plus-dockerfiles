@@ -4,14 +4,14 @@ LABEL maintainer="armand@f5.com"
 # Define NGINX versions for NGINX Plus and NGINX Plus modules
 # Uncomment this block and the versioned nginxPackages in the main RUN
 # instruction to install a specific release
-ENV NGINX_VERSION 22      
+ENV NGINX_VERSION 23      
 # https://nginx.org/en/docs/njs/changes.html
-ENV NJS_VERSION   0.4.3   
+ENV NJS_VERSION   0.5.2   
 # https://plus-pkgs.nginx.com
 ENV PKG_RELEASE   1.el7.ngx  
 
 ## Install Nginx Plus
-# Download certificate and key from the customer portal https://cs.nginx.com
+# Download certificate and key from the customer portal https://account.f5.com/myf5
 # and copy to the build context and set correct permissions
 RUN mkdir -p /etc/ssl/nginx
 COPY etc/ssl/nginx/nginx-repo.crt /etc/ssl/nginx/nginx-repo.crt

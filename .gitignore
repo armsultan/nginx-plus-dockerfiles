@@ -14,9 +14,11 @@ nginx-repo.key
 nginx-repo.crt
 *.pk12
 .log
+.lic
 
 # Project Specific files #
 ##########################
 NAP/Dockerfile
+NIM/Dockerfile
 NGINX-PLUS/Dockerfile
 CONTROLLER_AGENT/Dockerfile

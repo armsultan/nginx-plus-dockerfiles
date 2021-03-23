@@ -19,18 +19,21 @@ Run `./build-nginx-plus.sh [build_name]`, where `[build_name]` one of:
 |`centos7`                  | Centos 7 with NGINX Plus                           |
 |`centos7.6`                | Centos 7.6 with NGINX Plus                         |
 |`centos7.6_nap`            | Centos 7.6 with NGINX App Protect                  |
-|~~`centos7.6_controller`~~     | ~~Centos 7.6 with NGINX Plus and Controller agent~~    |
+|`centos7.6_nim`            | Centos 7.6 with NGINX Instance Manager with NGINX plus     |
+|~~`centos7.6_controller`~~   | ~~Centos 7.6 with NGINX Plus and Controller agent~~    |
 |`centos8`                  | Centos 8 with NGINX Plus                           |
-|`rhel7`                  | Red Hat (Universal Base) 7 with NGINX Plus                           |
-|`rhel8`                  | Red Hat (Universal Base) 8 with NGINX Plus                           |
+|`rhel7`                    | Red Hat (Universal Base) 7 with NGINX Plus                           |
+|`rhel8`                    | Red Hat (Universal Base) 8 with NGINX Plus                           |
+|`rhel8_nim`                | Red Hat (Universal Base) 8 with NGINX Instance Manager with NGINX plus     |
 |`debian9`                  | Debian 9 with NGINX Plus                           |
-|~~`debian9_controller`~~       | ~~Debian 9 with NGINX Plus and Controller agent~~      |
+|~~`debian9_controller`~~   | ~~Debian 9 with NGINX Plus and Controller agent~~      |
 |`debian10`                 | Debian 10 with NGINX Plus                          |
 |`ubuntu18.04`              | Ubuntu 18.04 with NGINX Plus                       |
 |~~`ubuntu18.04_controller`~~   | ~~Ubuntu 18.04 with NGINX Plus and Controller agent~~  |
-|`ubuntu18.04_crosplane`    | Ubuntu 18.04 with NGINX Plus and Crossplane        |
+|`ubuntu18.04_crossplane`    | Ubuntu 18.04 with NGINX Plus and Crossplane        |
 |`ubuntu18.04_nap`          | Ubuntu 18.04 with NGINX App Protect                |
 |`ubuntu20.04`              | Ubuntu 20.04 with NGINX Plus                       |
+|`ubuntu20.04_nim`          | Ubuntu 20.04 with NGINX Instance Manager with NGINX plus     |
 
 ## Build NGINX Plus Docker container using script
 
@@ -48,17 +51,25 @@ Run `./build-nginx-plus.sh [build_name]`, where `[build_name]` one of:
     ```bash
     # NGINX PLUS images are named nginx-plus-[build]
     $ docker images | grep nginx-plus
-    # App Protect images are named nginx-app-protect-[build]
+    # NGINX App Protect images are named nginx-app-protect-[build]
     $ docker images | grep nginx-app-protect
+    # NGINX Instance Manager images are named nginx-app-protect-[build]
+    $ docker images | grep nginx-nim
     # NGINX PLUS with Controller Agent images are named nginx-app-protect-[build]
     $ docker images | grep nginx-agent
     ```
 
  4. Start the container, e.g.:
     ```bash
+    # e.g. NGINX Plus, NGINX App Protect
     # Start a new container and publish container ports 80, 443 and 8080 to the host
     # Where [docker_image_name] is found on the last step
     $ docker run -d -p 80:80 -p 443:443 -p 8080:8080 [docker_image_name]
+
+   # e.g. NGINX Instance Manager
+    # Start a new container and publish container ports 80, 443 and 8080 to the host
+    # Where [docker_image_name] is found on the last step
+    $ docker run -d -p 80:80 -p 443:443 -p 8080:8080 -p 10002:10002 [docker_image_name]
     ```
 
     **To mount local volume:**
