@@ -1,4 +1,4 @@
-FROM alpine:3.9
+FROM alpine:3.12
 
 LABEL maintainer="armand@f5.com"
 
@@ -64,7 +64,7 @@ RUN set -x \
         # jq
         && apk add jq \
         # httpie
-        && apk add --no-cache python3 \
+        && apk add --no-cache py3-pip \
         && pip3 install --upgrade pip setuptools httpie \
         && rm -r /root/.cache \
         # Vegeta load generator
