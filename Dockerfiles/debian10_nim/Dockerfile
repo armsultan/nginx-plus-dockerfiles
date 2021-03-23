@@ -8,7 +8,7 @@ LABEL maintainer="armand@f5.com"
 # https://docs.nginx.com/nginx/releases/
 ENV NGINX_VERSION 23         
 # https://plus-pkgs.nginx.com
-ENV PKG_RELEASE   1~focal   
+ENV PKG_RELEASE   1~buster  
 # https://docs.nginx.com/nginx-instance-manager/releases/
 ENV NIM_VERSION 0.9.1-3047962     
 
@@ -47,7 +47,10 @@ RUN set -x \
     # Signing key for all NGINX things
     && wget http://nginx.org/keys/nginx_signing.key && apt-key add nginx_signing.key \
     # Install NGINX Plus from repo (https://cs.nginx.com/repo_setup)
-    && printf "deb https://plus-pkgs.nginx.com/ubuntu `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/nginx-plus.list \
+    && apt-get update && apt-get upgrade -y \
+    && apt-get install --no-install-recommends --no-install-suggests -y apt-transport-https ca-certificates gnupg1 lsb-release curl wget procps vim-tiny less apt-utils \
+    && wget https://cs.nginx.com/static/keys/nginx_signing.key && apt-key add nginx_signing.key \
+    && printf "deb https://plus-pkgs.nginx.com/debian `lsb_release -cs` nginx-plus\n" | tee /etc/apt/sources.list.d/nginx-plus.list \
     && wget -P /etc/apt/apt.conf.d https://cs.nginx.com/static/files/90nginx \
     && apt-get update \
     ## Install the latest release of NGINX Plus and/or NGINX Plus modules
