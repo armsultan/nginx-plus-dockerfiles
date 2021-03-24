@@ -1,5 +1,4 @@
-#For Debian 9
-FROM debian:stretch-slim
+FROM debian:buster-slim
 
 LABEL maintainer="armand@f5.com"
 
@@ -10,7 +9,7 @@ LABEL maintainer="armand@f5.com"
 ENV NGINX_VERSION 23
 # https://docs.nginx.com/nginx-app-protect/releases/
 ENV NAP_VERSION   3.332.0  
-ENV PKG_RELEASE   1~stretch
+ENV PKG_RELEASE   1~buster
 
 # Define Threat Campaigns Update
 # Uncomment this block and the versioned nginx Packages in the main RUN

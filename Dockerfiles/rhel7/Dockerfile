@@ -33,7 +33,7 @@ RUN set -x \
     ## Optionally use versioned packages over defaults to specify a release
     # List available versions: 
     && yum --showduplicates list nginx-plus \
-        && yum --showduplicates list nginx-plus-module-njs \
+    && yum --showduplicates list nginx-plus-module-njs \
     ## Uncomment one:
     # && yum install -y --disableplugin=subscription-manager --setopt=tsflags=nodocs nginx-plus \
     && yum install -y --disableplugin=subscription-manager --setopt=tsflags=nodocs nginx-plus-${NGINX_VERSION}-${PKG_RELEASE} \

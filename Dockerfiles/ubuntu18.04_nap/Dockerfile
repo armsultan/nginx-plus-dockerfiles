@@ -8,18 +8,18 @@ LABEL maintainer="armand@f5.com"
 # https://docs.nginx.com/nginx/releases/
 ENV NGINX_VERSION 23
 # https://docs.nginx.com/nginx-app-protect/releases/
-ENV NAP_VERSION   3.158.1
+ENV NAP_VERSION   3.332.0
 ENV PKG_RELEASE   1~bionic
 
 # Define Threat Campaigns Update
 # Uncomment this block and the versioned nginx Packages in the main RUN
 # instruction to install a specific release 
-ENV NAP_THREAT_CAMPAIGN_DATE    2020.09.16
+ENV NAP_THREAT_CAMPAIGN_DATE    2021.03.23
 
 # Define Attack Signature Update
 # Uncomment this block and the versioned nginx Packages in the main RUN
 # instruction to install a specific release 
-ENV NAP_ATTACK_SIGNATURE_DATE    2020.09.17
+ENV NAP_ATTACK_SIGNATURE_DATE    2021.03.22
 
 ## Install Nginx Plus
 # Download certificate and key from the customer portal https://account.f5.com/myf5

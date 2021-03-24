@@ -11,25 +11,30 @@ Run `./build-nginx-plus.sh [build_name]`, where `[build_name]` one of:
 | `[build_name]`            | Description           |
 | ------------------------- |--------------------------------------------------| 
 |`alpine3.10`               | Alpine Linux 3.10 with NGINX Plus                |
+|`alpine3.10`               | Alpine Linux 3.10 with NGINX App Protect         |
 |`alpine3.11`               | Alpine Linux 3.11 with NGINX Plus                |
 |`alpine3.12`               | Alpine Linux 3.11 with NGINX Plus                |
 |`alpine3.12_tools`          | Alpine Linux 3.12 with NGINX Plus and HTTP tools  |
 |`amazonlinux`              | Amazon Linux with NGINX Plus                     |
 |`amazonlinux2`             | Amazon Linux 2 with NGINX Plus                   |
 |~~`amazonlinux2_controller`~~  | ~~Amazon Linux 2 with NGINX Plus and Controller agent~~ |
-|`centos7`                  | Centos 7 with NGINX Plus                         |
+|`centos7`                  | Centos 7 (Latest) with NGINX Plus                         |
 |`centos7.6`                | Centos 7.6 with NGINX Plus                       |
 |`centos7.6_nap`            | Centos 7.6 with NGINX App Protect                |
 |`centos7.6_nim`            | Centos 7.6 with NGINX Instance Manager with NGINX plus   |
 |~~`centos7.6_controller`~~   | ~~Centos 7.6 with NGINX Plus and Controller agent~~    |
 |`centos8`                  | Centos 8 with NGINX Plus                         |
-|`rhel7`                    | Red Hat (Universal Base) 7 with NGINX Plus       |
+|`rhel7`                    | Red Hat (Universal Base) 7 (Latest) with NGINX Plus       |
+|`rhel7_nap`                | Red Hat (Universal Base) 7 with NGINX App Protect       |
 |`rhel8`                    | Red Hat (Universal Base) 8 with NGINX Plus       |
 |`rhel8_nim`                | Red Hat (Universal Base) 8 with NGINX Instance Manager with NGINX plus     |
 |`debian9`                  | Debian 9 with NGINX Plus                           |
+|`debian9_nap`                  | Debian 9 with NGINX NGINX App Protect                           |
 |~~`debian9_controller`~~   | ~~Debian 9 with NGINX Plus and Controller agent~~  |
 |`debian10`                 | Debian 10 with NGINX Plus                          |
+|`debian10_nap`                 | Debian 10 with NGINX App Protect                     |
 |`debian10_nim`                 | Debian 10 with NGINX Instance Manager with NGINX plus                  |
+|`oracle7`                | Oracle Linux 7 (Latest) with NGINX Plus                       |
 |`ubuntu18.04`              | Ubuntu 18.04 with NGINX Plus                       |
 |~~`ubuntu18.04_controller`~~   | ~~Ubuntu 18.04 with NGINX Plus and Controller agent~~  |
 |`ubuntu18.04_crossplane`    | Ubuntu 18.04 with NGINX Plus and Crossplane       |
